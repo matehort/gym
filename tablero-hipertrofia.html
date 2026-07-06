@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hipertrofia">
+<title>Tablero de Hipertrofia</title>
+
+<!-- CDN autorizados: Tailwind, Chart.js, Lucide. Si fallan, la app sigue funcionando con el CSS propio de abajo. -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  if (window.tailwind) {
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgdark: '#0B0F14',
+            panel: '#111827',
+            card: '#1F2937',
+            txt: '#E5E7EB',
+            accent: '#22C55E',
+            info: '#3B82F6',
+            danger: '#EF4444'
+          }
+        }
+      }
+    };
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --bg:#0B0F14; --panel:#111827; --card:#1F2937; --text:#E5E7EB;
+  --muted:#9CA3AF; --accent:#22C55E; --info:#3B82F6; --danger:#EF4444; --border:#2b3542;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-text-size-adjust:100%; overscroll-behavior-y:contain;}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom));}
+.hidden{display:none !important;}
+
+header.app-header{
+  position:sticky; top:0; z-index:20; background:var(--panel);
+  border-bottom:1px solid var(--border);
+  padding:calc(12px + env(safe-area-inset-top)) 16px 12px;
+  display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;
+}
+.app-title{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.app-title span.sub{display:block;font-weight:400;color:var(--muted);font-size:0.72rem;}
+.header-actions{display:flex; gap:8px; align-items:center;}
+.icon-btn{
+  background:var(--card); border:1px solid var(--border); color:var(--text);
+  min-width:44px; min-height:44px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.7rem; gap:4px; padding:0 10px;
+}
+.icon-btn:hover{border-color:var(--info);}
+
+nav.nav-top{display:none;}
+@media (min-width:768px){
+  nav.nav-top{display:flex; gap:4px; background:var(--panel); padding:6px; border-radius:12px;}
+  nav.nav-top button{
+    background:transparent; border:none; color:var(--muted); padding:10px 16px;
+    border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:6px; font-size:0.9rem;
+  }
+  nav.nav-top button.active{background:var(--card); color:var(--accent);}
+  nav.nav-bottom{display:none;}
+}
+nav.nav-bottom{
+  position:fixed; bottom:0; left:0; right:0; z-index:30; background:var(--panel);
+  border-top:1px solid var(--border); display:flex; justify-content:space-around;
+  padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+}
+nav.nav-bottom button{
+  background:transparent; border:none; color:var(--muted); display:flex; flex-direction:column;
+  align-items:center; gap:2px; font-size:0.62rem; padding:6px 4px; min-width:44px; min-height:44px; cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+nav.nav-bottom button.active{color:var(--accent);}
+
+main#main-content{max-width:960px; margin:0 auto; padding:16px; }
+.tab-section{display:flex; flex-direction:column; gap:0;}
+
+.card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:14px;}
+.card.highlight{border-color:var(--accent); background:linear-gradient(135deg, rgba(34,197,94,0.12), var(--card));}
+.card-label{color:var(--muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;}
+.card-title{font-size:1.4rem; font-weight:700; margin-top:4px;}
+.card-title-sm{font-weight:700; margin-bottom:10px; font-size:1rem;}
+
+.kpi-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:14px;}
+@media (min-width:640px){ .kpi-grid{grid-template-columns:repeat(4,1fr);} }
+.kpi-card{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px;}
+.kpi-label{color:var(--muted); font-size:0.75rem;}
+.kpi-value{font-size:1.3rem; font-weight:700; margin-top:4px;}
+.progress-bar{background:var(--bg); border-radius:6px; height:8px; margin-top:8px; overflow:hidden;}
+.progress-fill{background:var(--accent); height:100%; transition:width 0.4s ease;}
+
+.banner-warning{
+  background:rgba(239,68,68,0.12); border:1px solid var(--danger); color:var(--text);
+  border-radius:12px; padding:12px 14px; display:flex; flex-wrap:wrap; gap:10px;
+  align-items:center; justify-content:space-between; margin-bottom:14px;
+}
+
+.check-item{display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); cursor:pointer;}
+.check-item:last-child{border-bottom:none;}
+.check-item input[type=checkbox]{width:22px; height:22px; flex-shrink:0; accent-color:var(--accent); margin-top:2px;}
+.check-item.small{padding:6px 0; font-size:0.8rem;}
+.check-item small{color:var(--muted);}
+
+.btn-primary{background:var(--accent); color:#06210f; border:none; border-radius:10px; padding:12px 18px; font-weight:700; min-height:44px; cursor:pointer;}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-block{width:100%;}
+.btn-small{background:var(--panel); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:8px 12px; cursor:pointer; min-height:40px;}
+.btn-small:hover{border-color:var(--info);}
+
+.field-label{display:block; color:var(--muted); font-size:0.8rem; margin-bottom:6px;}
+.input-select, .input-num, .input-nota{
+  background:var(--panel); border:1px solid var(--border); color:var(--text);
+  border-radius:8px; padding:10px; min-height:44px; font-size:1rem; width:100%;
+}
+.input-nota{resize:vertical;}
+
+.ejercicio-card summary{cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; list-style:none;}
+.ejercicio-card summary::-webkit-details-marker{display:none;}
+.ejercicio-nombre{font-weight:600;}
+.badge-principal{background:var(--accent); color:#06210f; font-size:0.65rem; padding:2px 6px; border-radius:6px; margin-left:6px; font-weight:700;}
+.ejercicio-objetivo{color:var(--muted); font-size:0.8rem; white-space:nowrap;}
+.ejercicio-body{margin-top:12px; display:flex; flex-direction:column; gap:10px;}
+.record-anterior{background:rgba(59,130,246,0.12); border:1px solid var(--info); border-radius:8px; padding:8px 10px; font-size:0.85rem;}
+.record-anterior.muted{background:transparent; border-color:var(--border); color:var(--muted);}
+.serie-row{display:grid; grid-template-columns:26px 1fr 1fr 1fr; gap:8px; align-items:center;}
+.serie-num{color:var(--muted); font-size:0.8rem;}
+.btn-add-set{background:transparent; border:1px dashed var(--border); color:var(--muted); border-radius:8px; padding:8px; cursor:pointer; min-height:40px;}
+
+.calendar-nav{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
+.calendar-rango{color:var(--muted); font-size:0.85rem;}
+.calendar-grid{display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:14px;}
+@media (min-width:640px){ .calendar-grid{grid-template-columns:repeat(2,1fr);} }
+@media (min-width:1024px){ .calendar-grid{grid-template-columns:repeat(4,1fr);} }
+.dia-card{border-radius:14px; padding:12px; border:1px solid var(--border); background:var(--card);}
+.dia-nombre{font-weight:700; display:flex; align-items:center; gap:6px;}
+.hoy-tag{background:var(--info); color:#06122b; font-size:0.6rem; padding:2px 6px; border-radius:6px;}
+.dia-fecha{color:var(--muted); font-size:0.75rem; margin-bottom:4px;}
+.dia-sesion{font-size:0.9rem; margin-bottom:8px;}
+.dia-verde{border-color:var(--accent); background:rgba(34,197,94,0.12);}
+.dia-rojo{border-color:var(--danger); background:rgba(239,68,68,0.12);}
+.dia-gris{border-color:var(--border); background:rgba(148,163,184,0.08);}
+.dia-neutro{border-color:var(--border);}
+
+.semaforo{border-radius:10px; padding:10px; font-size:0.9rem;}
+.semaforo-verde{background:rgba(34,197,94,0.15); border:1px solid var(--accent);}
+.semaforo-amarillo{background:rgba(234,179,8,0.15); border:1px solid #EAB308;}
+.semaforo-gris{background:rgba(148,163,184,0.12); border:1px solid var(--border);}
+
+.peso-input-row{display:flex; gap:8px;}
+.peso-input-row .input-num{flex:1;}
+.porcion-botones{display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;}
+.porcion-actual{color:var(--muted); font-size:0.85rem;}
+
+.heat-row{display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;}
+.heat-label{width:150px; font-size:0.72rem; color:var(--muted); flex-shrink:0;}
+.heat-cells{display:flex; gap:3px; flex-wrap:wrap;}
+.heat-cell{width:14px; height:14px; border-radius:3px; background:var(--panel); border:1px solid var(--border); display:inline-block;}
+.heat-on{background:var(--accent); border-color:var(--accent);}
+
+.chip-selector{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;}
+.chip{background:var(--panel); border:1px solid var(--border); border-radius:20px; padding:6px 12px; font-size:0.75rem; display:flex; align-items:center; gap:6px; cursor:pointer;}
+.chip input{accent-color:var(--accent);}
+
+.patron-msg{background:rgba(59,130,246,0.1); border:1px solid var(--info); border-radius:10px; padding:10px; margin-bottom:8px; font-size:0.9rem;}
+.muted{color:var(--muted); font-size:0.85rem;}
+
+#toast-container{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:100; display:flex; flex-direction:column; gap:8px; align-items:center;}
+.toast{background:var(--card); border:1px solid var(--accent); color:var(--text); padding:10px 16px; border-radius:10px; opacity:0; transform:translateY(-10px); transition:all 0.25s ease; font-size:0.85rem;}
+.toast.show{opacity:1; transform:translateY(0);}
+.toast-error{border-color:var(--danger);}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-title">
+    <span id="icon-dumbbell-header" data-lucide="dumbbell"></span>
+    Hipertrofia
+    <span class="sub" id="header-fecha"></span>
+  </div>
+  <nav class="nav-top" id="nav-top">
+    <button data-tab="dashboard"><span data-lucide="layout-dashboard"></span> Dashboard</button>
+    <button data-tab="registro"><span data-lucide="clipboard-list"></span> Registro</button>
+    <button data-tab="calendario"><span data-lucide="calendar-days"></span> Calendario</button>
+    <button data-tab="nutricion"><span data-lucide="apple"></span> Nutrición</button>
+    <button data-tab="analiticas"><span data-lucide="line-chart"></span> Analíticas</button>
+  </nav>
+  <div class="header-actions">
+    <button class="icon-btn" id="btn-exportar" title="Exportar respaldo JSON"><span data-lucide="download"></span></button>
+    <label class="icon-btn" title="Importar respaldo JSON">
+      <span data-lucide="upload"></span>
+      <input type="file" id="input-importar" accept="application/json" class="hidden">
+    </label>
+  </div>
+</header>
+
+<main id="main-content">
+  <section id="tab-dashboard" class="tab-section"></section>
+  <section id="tab-registro" class="tab-section hidden"></section>
+  <section id="tab-calendario" class="tab-section hidden"></section>
+  <section id="tab-nutricion" class="tab-section hidden"></section>
+  <section id="tab-analiticas" class="tab-section hidden"></section>
+</main>
+
+<nav class="nav-bottom" id="nav-bottom">
+  <button data-tab="dashboard"><span data-lucide="layout-dashboard"></span> Dashboard</button>
+  <button data-tab="registro"><span data-lucide="clipboard-list"></span> Registro</button>
+  <button data-tab="calendario"><span data-lucide="calendar-days"></span> Calendario</button>
+  <button data-tab="nutricion"><span data-lucide="apple"></span> Nutrición</button>
+  <button data-tab="analiticas"><span data-lucide="line-chart"></span> Analíticas</button>
+</nav>
+
+<div id="toast-container"></div>
+
+<script>
+/* ============================================================
+   MANEJO GLOBAL DE ERRORES
+   Si algo falla (p. ej. Safari/iOS bloqueando localStorage en un
+   archivo local), se muestra un aviso en pantalla en lugar de dejar
+   la app en blanco sin ninguna pista de qué pasó.
+   ============================================================ */
+function mostrarErrorFatal(msg){
+  const cont = document.getElementById('main-content');
+  if(!cont) return;
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.style.borderColor = '#EF4444';
+  div.innerHTML = '<div class="card-title-sm" style="color:#EF4444">Ocurrió un error</div>' +
+    '<div class="muted">' + String(msg).replace(/</g,'&lt;') + '</div>' +
+    '<div class="muted" style="margin-top:8px">Si esto persiste en tu celular, intenta abrir el archivo con "Abrir en Safari" en vez de la vista previa, o agrégalo a tu pantalla de inicio.</div>';
+  cont.prepend(div);
+}
+window.addEventListener('error', (e) => mostrarErrorFatal(e.message || 'Error desconocido'));
+window.addEventListener('unhandledrejection', (e) => mostrarErrorFatal((e.reason && e.reason.message) || String(e.reason)));
+
+/* ============================================================
+   DATOS SEMILLA: rutina real del usuario (no inventar/alterar)
+   ============================================================ */
+const ROUTINE_DATA = {
+  "perfil": { "nombre": "Usuario", "estatura_m": 1.85, "peso_inicial_kg": 88, "peso_meta_kg": 90 },
+  "semana": {
+    "lunes":     { "sesion": "Lower A", "tipo": "gym" },
+    "martes":    { "sesion": "Descanso", "tipo": "descanso" },
+    "miercoles": { "sesion": "Upper A", "tipo": "gym+natacion" },
+    "jueves":    { "sesion": "Lower B", "tipo": "gym+natacion" },
+    "viernes":   { "sesion": "Upper B", "tipo": "gym" },
+    "sabado":    { "sesion": "Lower C", "tipo": "gym" },
+    "domingo":   { "sesion": "Descanso total", "tipo": "descanso" }
+  },
+  "sesiones": {
+    "Lower A": [
+      { "id": "squat",        "nombre": "Sentadilla trasera barra",              "series": 4, "reps": "5-7",       "rir": "2",   "principal": true },
+      { "id": "prensa",       "nombre": "Prensa 45° / goblet pesada",            "series": 3, "reps": "8-10",      "rir": "1-2", "principal": false },
+      { "id": "rdl",          "nombre": "Peso muerto rumano barra",              "series": 3, "reps": "8-10",      "rir": "2",   "principal": true },
+      { "id": "zancada_rev",  "nombre": "Zancada reversa con mancuernas",        "series": 2, "reps": "10-12 c/p", "rir": "1",   "principal": false },
+      { "id": "gemelo_pie_a", "nombre": "Gemelo de pie (escalón + mancuerna)",   "series": 4, "reps": "10-12",     "rir": "1",   "principal": false },
+      { "id": "pallof",       "nombre": "Pallof press en polea",                 "series": 3, "reps": "12 c/l",    "rir": "-",   "principal": false }
+    ],
+    "Upper A": [
+      { "id": "banca",        "nombre": "Press banca plano barra",               "series": 4, "reps": "6-8",   "rir": "2", "principal": true },
+      { "id": "csr",          "nombre": "Chest supported row (máquina)",         "series": 4, "reps": "8-10",  "rir": "2", "principal": true },
+      { "id": "inclinado_db", "nombre": "Press inclinado mancuernas (15-30°)",   "series": 3, "reps": "10-12", "rir": "1", "principal": false },
+      { "id": "remo_uni",     "nombre": "Remo mancuerna unilateral",             "series": 3, "reps": "10-12", "rir": "1", "principal": false },
+      { "id": "facepull",     "nombre": "Face pulls en polea",                   "series": 3, "reps": "15",    "rir": "1", "principal": false },
+      { "id": "curl_z",       "nombre": "Curl bíceps barra Z",                   "series": 3, "reps": "8-10",  "rir": "1", "principal": false },
+      { "id": "triceps_pol",  "nombre": "Extensión tríceps polea",               "series": 3, "reps": "10-12", "rir": "1", "principal": false }
+    ],
+    "Lower B": [
+      { "id": "hipthrust",    "nombre": "Hip thrust con barra",                  "series": 4, "reps": "8-10",      "rir": "1-2", "principal": true },
+      { "id": "bulgaro",      "nombre": "Split búlgaro con mancuernas",          "series": 3, "reps": "10-12 c/p", "rir": "1",   "principal": false },
+      { "id": "femoral",      "nombre": "Curl femoral (nórdico/fitball)",        "series": 3, "reps": "10-12",     "rir": "1",   "principal": false },
+      { "id": "sissy",        "nombre": "Sissy squat asistida / step-up alto",   "series": 3, "reps": "12-15",     "rir": "1",   "principal": false },
+      { "id": "gemelo_sent",  "nombre": "Gemelo sentado (banco + carga)",        "series": 4, "reps": "12-15",     "rir": "0-1", "principal": false },
+      { "id": "abduccion",    "nombre": "Abducción banda / patada polea",        "series": 3, "reps": "15",        "rir": "-",   "principal": false }
+    ],
+    "Upper B": [
+      { "id": "militar",      "nombre": "Press militar barra de pie",            "series": 4, "reps": "6-8",   "rir": "2",   "principal": true },
+      { "id": "dominadas",    "nombre": "Dominadas lastradas / jalón polea",     "series": 4, "reps": "8-10",  "rir": "1-2", "principal": true },
+      { "id": "plano_db",     "nombre": "Press plano mancuernas / fondos",       "series": 3, "reps": "10-12", "rir": "1",   "principal": false },
+      { "id": "remo_polea",   "nombre": "Remo polea baja agarre neutro",         "series": 3, "reps": "10-12", "rir": "1",   "principal": false },
+      { "id": "laterales",    "nombre": "Elevaciones laterales",                 "series": 4, "reps": "12-15", "rir": "0-1", "principal": false },
+      { "id": "curl_alt",     "nombre": "Curl alterno / predicador",             "series": 3, "reps": "10-12", "rir": "1",   "principal": false },
+      { "id": "press_cerr",   "nombre": "Press cerrado / extensión sobre cabeza","series": 3, "reps": "10-12", "rir": "1",   "principal": false }
+    ],
+    "Lower C": [
+      { "id": "squat_pausa",  "nombre": "Sentadilla trasera con pausa (2 seg)",  "series": 4, "reps": "5-6",   "rir": "2",   "principal": true },
+      { "id": "buenos_dias",  "nombre": "Buenos días barra / hiperextensión 45°","series": 3, "reps": "10-12", "rir": "2",   "principal": false },
+      { "id": "hipthrust_p",  "nombre": "Hip thrust pesado",                     "series": 4, "reps": "6-8",   "rir": "1-2", "principal": true },
+      { "id": "gemelo_pie_c", "nombre": "Gemelo de pie",                         "series": 3, "reps": "10-12", "rir": "1",   "principal": false },
+      { "id": "opcional_sup", "nombre": "Opcional: laterales o curl",            "series": 3, "reps": "12-15", "rir": "1",   "principal": false },
+      { "id": "bodysaw",      "nombre": "Body saw / crunch en polea alta",       "series": 3, "reps": "12-15", "rir": "-",   "principal": false }
+    ]
+  },
+  "suplementos": [
+    { "id": "creatina", "nombre": "Creatina monohidratada", "dosis": "6 g",          "momento": "Cualquier hora, TODOS los días (incluye descansos)" },
+    { "id": "ganador",  "nombre": "Serious Mass",           "dosis": "1/2-1/3 porción (400-600 kcal)", "momento": "Alrededor del entreno; 1/4 u omitir en descanso" },
+    { "id": "d3",       "nombre": "Vitamina D3",            "dosis": "1,000-2,000 UI","momento": "Con comida con grasa" },
+    { "id": "omega3",   "nombre": "Omega-3 (EPA+DHA)",      "dosis": "1-2 g",         "momento": "Con comidas" },
+    { "id": "magnesio", "nombre": "Magnesio glicinato",     "dosis": "200-400 mg",    "momento": "Noche" },
+    { "id": "zinc",     "nombre": "Zinc",                   "dosis": "10-15 mg",      "momento": "Separado de café y calcio" }
+  ]
+};
+
+/* ============================================================
+   UTILIDADES DE FECHAS
+   ============================================================ */
+const DIAS_JS = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado']; // indexado por Date.getDay()
+const DIAS_LABEL = { lunes:'Lunes', martes:'Martes', miercoles:'Miércoles', jueves:'Jueves', viernes:'Viernes', sabado:'Sábado', domingo:'Domingo' };
+
+function fmtFecha(date){
+  const y = date.getFullYear(), m = String(date.getMonth()+1).padStart(2,'0'), d = String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+function parseFecha(str){
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function hoyStr(){ return fmtFecha(new Date()); }
+function diaKeyDeFecha(date){ return DIAS_JS[date.getDay()]; }
+function addDias(date, n){ const d = new Date(date); d.setDate(d.getDate()+n); return d; }
+function inicioDelDia(date){ const d = new Date(date); d.setHours(0,0,0,0); return d; }
+function lunesDeSemana(date){
+  const d = new Date(date);
+  const dow = d.getDay();
+  const diff = (dow === 0 ? -6 : 1 - dow);
+  return addDias(d, diff);
+}
+// Fórmula de Epley para estimar la carga máxima en una repetición: 1RM = peso × (1 + reps/30)
+function epley1RM(kg, reps){
+  return kg * (1 + reps/30);
+}
+
+/* ============================================================
+   ALMACENAMIENTO (localStorage, esquema versionado)
+   ============================================================ */
+const STORAGE_KEY = 'hipertrofia_app_v1';
+
+// Safari en iOS puede lanzar SecurityError al usar localStorage cuando la página
+// se abre como archivo local (file://) o dentro de ciertas vistas previas.
+// Este envoltorio evita que ese error tumbe toda la app: si localStorage falla,
+// se usa memoria RAM como respaldo (los datos duran mientras la pestaña siga abierta)
+// y se expone `disponible` para avisarle al usuario que exporte su progreso.
+const SafeLocalStorage = (function(){
+  let memoria = {};
+  let disponible = true;
+  try{
+    const testKey = '__test_storage__';
+    window.localStorage.setItem(testKey, '1');
+    window.localStorage.removeItem(testKey);
+  }catch(e){
+    disponible = false;
+  }
+  return {
+    get disponible(){ return disponible; },
+    getItem(key){
+      if(disponible){
+        try{ return window.localStorage.getItem(key); }
+        catch(e){ disponible = false; }
+      }
+      return Object.prototype.hasOwnProperty.call(memoria, key) ? memoria[key] : null;
+    },
+    setItem(key, value){
+      if(disponible){
+        try{ window.localStorage.setItem(key, value); return; }
+        catch(e){ disponible = false; }
+      }
+      memoria[key] = value;
+    }
+  };
+})();
+
+const Storage = {
+  defaultState(){
+    const hoy = hoyStr();
+    return {
+      schemaVersion: 1,
+      pesoCorporal: [],
+      entrenamientos: [],
+      consistencia: {},
+      suplementacion: {},
+      config: { fechaInicio: hoy, pesoMeta: ROUTINE_DATA.perfil.peso_meta_kg, ultimaDescarga: hoy }
+    };
+  },
+  // Carga el estado desde localStorage; si no existe, está corrupto, o el navegador
+  // lo bloquea (típico en Safari/iOS con archivos locales), crea uno nuevo sin romper la app.
+  load(){
+    try{
+      const raw = SafeLocalStorage.getItem(STORAGE_KEY);
+      if(!raw){
+        const def = this.defaultState();
+        this.save(def);
+        return def;
+      }
+      const parsed = JSON.parse(raw);
+      if(typeof parsed.schemaVersion === 'undefined') throw new Error('Falta schemaVersion');
+      parsed.pesoCorporal = parsed.pesoCorporal || [];
+      parsed.entrenamientos = parsed.entrenamientos || [];
+      parsed.consistencia = parsed.consistencia || {};
+      parsed.suplementacion = parsed.suplementacion || {};
+      parsed.config = parsed.config || {};
+      parsed.config.fechaInicio = parsed.config.fechaInicio || hoyStr();
+      parsed.config.pesoMeta = parsed.config.pesoMeta || ROUTINE_DATA.perfil.peso_meta_kg;
+      parsed.config.ultimaDescarga = parsed.config.ultimaDescarga || parsed.config.fechaInicio;
+      return parsed;
+    }catch(e){
+      console.error('No se pudo leer el almacenamiento, se reinicia:', e);
+      const def = this.defaultState();
+      this.save(def);
+      return def;
+    }
+  },
+  save(state){
+    SafeLocalStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  },
+  exportar(state){
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `respaldo-hipertrofia-${hoyStr()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+  importar(file, callback){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try{
+        const data = JSON.parse(e.target.result);
+        if(typeof data.schemaVersion === 'undefined'){
+          alert('El archivo no tiene un formato válido (falta schemaVersion).');
+          return;
+        }
+        callback(data);
+      }catch(err){
+        alert('No se pudo leer el archivo JSON seleccionado.');
+      }
+    };
+    reader.readAsText(file);
+  }
+};
+
+/* ============================================================
+   NÚCLEO DE LA APP: navegación, estado global, utilidades UI
+   ============================================================ */
+const App = {
+  state: null,
+  currentTab: 'dashboard',
+
+  init(){
+    try{
+      this.state = Storage.load();
+      document.getElementById('header-fecha').textContent = new Date().toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+      this.bindNav();
+      this.bindGlobalActions();
+      this.switchTab('dashboard');
+      this.renderIcons();
+      if(!SafeLocalStorage.disponible){
+        this.toast('Tu navegador no permite guardar datos de forma permanente aquí. Exporta tu progreso antes de cerrar.', 'error');
+      }
+    }catch(e){
+      mostrarErrorFatal(e.message);
+    }
+  },
+  save(){ Storage.save(this.state); },
+  renderIcons(){ if(window.lucide){ lucide.createIcons(); } },
+  toast(msg, type){
+    const cont = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = 'toast' + (type === 'error' ? ' toast-error' : '');
+    el.textContent = msg;
+    cont.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => el.remove(), 300);
+    }, 2200);
+  },
+  bindNav(){
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => this.switchTab(btn.dataset.tab));
+    });
+  },
+  switchTab(tab){
+    this.currentTab = tab;
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.add('hidden'));
+    document.getElementById('tab-' + tab).classList.remove('hidden');
+    document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    try{
+      switch(tab){
+        case 'dashboard': Dashboard.render(); break;
+        case 'registro': Registro.render(); break;
+        case 'calendario': Calendario.render(); break;
+        case 'nutricion': Nutricion.render(); break;
+        case 'analiticas': Analiticas.render(); break;
+      }
+    }catch(e){
+      mostrarErrorFatal(e.message);
+    }
+    this.renderIcons();
+  },
+  bindGlobalActions(){
+    document.getElementById('btn-exportar').addEventListener('click', () => {
+      Storage.exportar(this.state);
+      this.toast('Respaldo exportado');
+    });
+    document.getElementById('input-importar').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      Storage.importar(file, (data) => {
+        if(confirm('¿Deseas sobrescribir todos tus datos actuales con este respaldo?')){
+          data.pesoCorporal = data.pesoCorporal || [];
+          data.entrenamientos = data.entrenamientos || [];
+          data.consistencia = data.consistencia || {};
+          data.suplementacion = data.suplementacion || {};
+          data.config = data.config || {};
+          this.state = data;
+          this.save();
+          this.toast('Datos restaurados');
+          this.switchTab(this.currentTab);
+        }
+      });
+      e.target.value = '';
+    });
+  }
+};
+
+/* ============================================================
+   PESTAÑA 1: DASHBOARD
+   ============================================================ */
+const Dashboard = {
+  render(){
+    const cont = document.getElementById('tab-dashboard');
+    const hoy = new Date();
+    const diaKey = diaKeyDeFecha(hoy);
+    const plan = ROUTINE_DATA.semana[diaKey];
+    const fechaHoy = hoyStr();
+
+    const pesos = App.state.pesoCorporal.slice().sort((a,b) => a.fecha.localeCompare(b.fecha));
+    const pesoActual = pesos.length ? pesos[pesos.length-1].kg : null;
+    const meta = App.state.config.pesoMeta;
+    const inicio = ROUTINE_DATA.perfil.peso_inicial_kg;
+    let progreso = 0;
+    if(pesoActual !== null && meta !== inicio){
+      progreso = Math.min(100, Math.max(0, ((pesoActual - inicio) / (meta - inicio)) * 100));
+    }
+
+    const pctMes = this.pctSesionesMes();
+    const racha = this.calcularRacha();
+
+    let html = `
+      <div class="card highlight">
+        <div class="card-label">Hoy es ${DIAS_LABEL[diaKey]}</div>
+        <div class="card-title">${plan.sesion}${plan.tipo.includes('natacion') ? ' + Natación 1h' : ''}</div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Peso actual</div>
+          <div class="kpi-value">${pesoActual !== null ? pesoActual.toFixed(1) + ' kg' : '—'}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Meta (${meta} kg)</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${progreso}%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Gym cumplido este mes</div>
+          <div class="kpi-value">${pctMes}%</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Racha actual</div>
+          <div class="kpi-value">${racha} día${racha === 1 ? '' : 's'}</div>
+        </div>
+      </div>
+    `;
+
+    html += this.bannerDescarga();
+    html += this.renderChecklistSuplementos(fechaHoy);
+
+    cont.innerHTML = html;
+
+    const btnDescarga = document.getElementById('btn-marcar-descarga');
+    if(btnDescarga) btnDescarga.addEventListener('click', () => this.marcarDescarga());
+    this.bindChecklist(fechaHoy);
+  },
+
+  pctSesionesMes(){
+    const hoy = new Date();
+    const anio = hoy.getFullYear(), mes = hoy.getMonth();
+    let planificados = 0, cumplidos = 0;
+    for(let d = 1; d <= hoy.getDate(); d++){
+      const fecha = new Date(anio, mes, d);
+      const key = diaKeyDeFecha(fecha);
+      const plan = ROUTINE_DATA.semana[key];
+      if(plan.tipo.includes('gym')){
+        planificados++;
+        const fstr = fmtFecha(fecha);
+        if(App.state.consistencia[fstr] && App.state.consistencia[fstr].gym) cumplidos++;
+      }
+    }
+    return planificados ? Math.round((cumplidos/planificados) * 100) : 0;
+  },
+
+  // Un día se considera "cumplido" según lo que exigía el plan de esa jornada
+  diaCumplido(fecha){
+    const key = diaKeyDeFecha(fecha);
+    const plan = ROUTINE_DATA.semana[key];
+    const fstr = fmtFecha(fecha);
+    const reg = App.state.consistencia[fstr];
+    if(plan.tipo === 'descanso') return true;
+    if(plan.tipo.includes('gym') && plan.tipo.includes('natacion')) return !!(reg && reg.gym && reg.natacion);
+    return !!(reg && reg.gym);
+  },
+
+  calcularRacha(){
+    let racha = 0;
+    if(this.diaCumplido(new Date())) racha++;
+    let cursor = addDias(new Date(), -1);
+    while(this.diaCumplido(cursor)){
+      racha++;
+      cursor = addDias(cursor, -1);
+    }
+    return racha;
+  },
+
+  bannerDescarga(){
+    const ultima = parseFecha(App.state.config.ultimaDescarga || App.state.config.fechaInicio);
+    const hoy = new Date();
+    const semanas = Math.floor((hoy - ultima) / (7 * 24 * 60 * 60 * 1000));
+    if(semanas >= 6){
+      return `
+        <div class="banner-warning">
+          <span>Llevas ${semanas} semanas: programa una semana de descarga (mismo peso, mitad de series, RIR 4).</span>
+          <button class="btn-small" id="btn-marcar-descarga">Marcar descarga esta semana</button>
+        </div>`;
+    }
+    return '';
+  },
+
+  marcarDescarga(){
+    App.state.config.ultimaDescarga = hoyStr();
+    App.save();
+    App.toast('Descarga registrada');
+    Dashboard.render();
+    App.renderIcons();
+  },
+
+  renderChecklistSuplementos(fecha){
+    const registro = App.state.suplementacion[fecha] || {};
+    const items = ROUTINE_DATA.suplementos.map(s => `
+      <label class="check-item">
+        <input type="checkbox" data-supp="${s.id}" ${registro[s.id] ? 'checked' : ''}>
+        <span><strong>${s.nombre}</strong> — ${s.dosis}<br><small>${s.momento}</small></span>
+      </label>
+    `).join('');
+    return `<div class="card"><div class="card-title-sm">Suplementos de hoy</div>${items}</div>`;
+  },
+
+  bindChecklist(fecha){
+    document.querySelectorAll('[data-supp]').forEach(chk => {
+      chk.addEventListener('change', () => {
+        App.state.suplementacion[fecha] = App.state.suplementacion[fecha] || {};
+        App.state.suplementacion[fecha][chk.dataset.supp] = chk.checked;
+        App.save();
+        App.toast('Guardado');
+      });
+    });
+  }
+};
+
+/* ============================================================
+   PESTAÑA 2: REGISTRO DE ENTRENAMIENTO
+   ============================================================ */
+const Registro = {
+  sesionSeleccionada: null,
+  valores: {},
+
+  render(){
+    const cont = document.getElementById('tab-registro');
+    const hoy = new Date();
+    const diaKey = diaKeyDeFecha(hoy);
+    const planHoy = ROUTINE_DATA.semana[diaKey];
+
+    if(!this.sesionSeleccionada){
+      this.sesionSeleccionada = planHoy.tipo !== 'descanso' ? planHoy.sesion : Object.keys(ROUTINE_DATA.sesiones)[0];
+    }
+    if(!this.valores[this.sesionSeleccionada]) this.inicializarValores(this.sesionSeleccionada);
+
+    const opciones = Object.keys(ROUTINE_DATA.sesiones).map(s =>
+      `<option value="${s}" ${s === this.sesionSeleccionada ? 'selected' : ''}>${s}</option>`
+    ).join('');
+
+    cont.innerHTML = `
+      <div class="card">
+        <label class="field-label">Sesión a registrar</label>
+        <select id="select-sesion" class="input-select">${opciones}</select>
+      </div>
+      <div id="lista-ejercicios">${this.renderEjercicios()}</div>
+      <button id="btn-finalizar" class="btn-primary btn-block">Finalizar sesión</button>
+    `;
+
+    document.getElementById('select-sesion').addEventListener('change', (e) => {
+      this.sesionSeleccionada = e.target.value;
+      if(!this.valores[this.sesionSeleccionada]) this.inicializarValores(this.sesionSeleccionada);
+      document.getElementById('lista-ejercicios').innerHTML = this.renderEjercicios();
+      this.bindEjercicios();
+      App.renderIcons();
+    });
+    document.getElementById('btn-finalizar').addEventListener('click', () => this.finalizarSesion());
+    this.bindEjercicios();
+  },
+
+  inicializarValores(sesion){
+    const ejercicios = ROUTINE_DATA.sesiones[sesion];
+    this.valores[sesion] = {};
+    ejercicios.forEach(ej => {
+      this.valores[sesion][ej.id] = {
+        series: Array.from({length: ej.series}, () => ({ kg: '', reps: '', rir: '' })),
+        nota: ''
+      };
+    });
+  },
+
+  // Busca la mejor serie histórica (mayor 1RM estimado) para mostrar la referencia de sobrecarga progresiva
+  mejorSerieAnterior(ejercicioId){
+    let mejor = null;
+    App.state.entrenamientos.forEach(ent => {
+      ent.registros.forEach(reg => {
+        if(reg.ejercicioId !== ejercicioId) return;
+        reg.series.forEach(serie => {
+          if(!serie.kg || !serie.reps) return;
+          const rm = epley1RM(serie.kg, serie.reps);
+          if(!mejor || rm > mejor.rm) mejor = { kg: serie.kg, reps: serie.reps, rm };
+        });
+      });
+    });
+    return mejor;
+  },
+
+  renderEjercicios(){
+    const ejercicios = ROUTINE_DATA.sesiones[this.sesionSeleccionada];
+    return ejercicios.map(ej => {
+      const datos = this.valores[this.sesionSeleccionada][ej.id];
+      const mejor = this.mejorSerieAnterior(ej.id);
+      const filas = datos.series.map((s, i) => `
+        <div class="serie-row">
+          <span class="serie-num">#${i+1}</span>
+          <input type="number" inputmode="decimal" class="input-num" placeholder="kg" value="${s.kg}" data-ej="${ej.id}" data-idx="${i}" data-campo="kg">
+          <input type="number" inputmode="numeric" class="input-num" placeholder="reps" value="${s.reps}" data-ej="${ej.id}" data-idx="${i}" data-campo="reps">
+          <select class="input-num" data-ej="${ej.id}" data-idx="${i}" data-campo="rir">
+            <option value="">RIR</option>
+            ${[0,1,2,3,4].map(r => `<option value="${r}" ${String(s.rir) === String(r) ? 'selected' : ''}>${r}</option>`).join('')}
+          </select>
+        </div>
+      `).join('');
+
+      return `
+        <details class="card ejercicio-card" ${ej.principal ? 'open' : ''}>
+          <summary>
+            <span class="ejercicio-nombre">${ej.nombre}${ej.principal ? '<span class="badge-principal">Principal</span>' : ''}</span>
+            <span class="ejercicio-objetivo">${ej.series}×${ej.reps} @ RIR ${ej.rir}</span>
+          </summary>
+          <div class="ejercicio-body">
+            ${mejor
+              ? `<div class="record-anterior">Récord a superar: ${mejor.kg} kg × ${mejor.reps} (1RM est. ${mejor.rm.toFixed(1)} kg)</div>`
+              : `<div class="record-anterior muted">Aún no hay historial para este ejercicio.</div>`}
+            ${filas}
+            <button class="btn-add-set" data-add-ej="${ej.id}">+ Añadir serie</button>
+            <textarea class="input-nota" placeholder="Nota (opcional)" data-nota="${ej.id}">${datos.nota}</textarea>
+          </div>
+        </details>
+      `;
+    }).join('');
+  },
+
+  bindEjercicios(){
+    document.querySelectorAll('[data-ej]').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const { ej, idx, campo } = e.target.dataset;
+        this.valores[this.sesionSeleccionada][ej].series[idx][campo] = e.target.value;
+      });
+    });
+    document.querySelectorAll('[data-nota]').forEach(ta => {
+      ta.addEventListener('input', (e) => {
+        this.valores[this.sesionSeleccionada][e.target.dataset.nota].nota = e.target.value;
+      });
+    });
+    document.querySelectorAll('[data-add-ej]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const ejId = e.currentTarget.dataset.addEj;
+        this.valores[this.sesionSeleccionada][ejId].series.push({ kg: '', reps: '', rir: '' });
+        document.getElementById('lista-ejercicios').innerHTML = this.renderEjercicios();
+        this.bindEjercicios();
+        App.renderIcons();
+      });
+    });
+  },
+
+  finalizarSesion(){
+    const sesion = this.sesionSeleccionada;
+    const datos = this.valores[sesion];
+    const registros = Object.keys(datos).map(ejId => {
+      const seriesValidas = datos[ejId].series
+        .filter(s => s.kg !== '' && s.reps !== '')
+        .map(s => ({ kg: parseFloat(s.kg), reps: parseInt(s.reps, 10), rir: s.rir === '' ? null : parseInt(s.rir, 10) }));
+      return { ejercicioId: ejId, series: seriesValidas, nota: datos[ejId].nota };
+    }).filter(r => r.series.length > 0);
+
+    if(registros.length === 0){
+      alert('Registra al menos una serie antes de finalizar.');
+      return;
+    }
+
+    const fecha = hoyStr();
+    App.state.entrenamientos.push({ fecha, sesion, registros });
+
+    App.state.consistencia[fecha] = App.state.consistencia[fecha] || {};
+    App.state.consistencia[fecha].gym = true;
+
+    const planHoy = ROUTINE_DATA.semana[diaKeyDeFecha(new Date())];
+    if(planHoy.tipo.includes('natacion')){
+      if(confirm('¿También completaste la natación de hoy?')){
+        App.state.consistencia[fecha].natacion = true;
+      }
+    }
+
+    App.save();
+    App.toast('Sesión guardada');
+    delete this.valores[sesion];
+    this.render();
+    App.renderIcons();
+  }
+};
+
+/* ============================================================
+   PESTAÑA 3: CALENDARIO DE CONSISTENCIA
+   ============================================================ */
+const Calendario = {
+  offset: 0,
+
+  render(){
+    const cont = document.getElementById('tab-calendario');
+    const lunesBase = lunesDeSemana(new Date());
+    const lunesSemana = addDias(lunesBase, this.offset * 7);
+
+    const dias = Array.from({length: 7}, (_, i) => addDias(lunesSemana, i));
+    const tarjetas = dias.map(fecha => this.renderTarjeta(fecha)).join('');
+    const resumen = this.resumenMensual();
+
+    cont.innerHTML = `
+      <div class="calendar-nav">
+        <button id="cal-prev" class="btn-small">&larr; Semana anterior</button>
+        <span class="calendar-rango">${fmtFecha(lunesSemana)} — ${fmtFecha(addDias(lunesSemana, 6))}</span>
+        <button id="cal-next" class="btn-small">Semana siguiente &rarr;</button>
+      </div>
+      <div class="calendar-grid">${tarjetas}</div>
+      <div class="card">
+        <div class="card-title-sm">Resumen del mes</div>
+        <div>Gym: ${resumen.gym}% · Natación: ${resumen.natacion}%</div>
+      </div>
+    `;
+
+    document.getElementById('cal-prev').addEventListener('click', () => { this.offset--; this.render(); App.renderIcons(); });
+    document.getElementById('cal-next').addEventListener('click', () => { this.offset++; this.render(); App.renderIcons(); });
+    this.bindChecks();
+  },
+
+  renderTarjeta(fecha){
+    const key = diaKeyDeFecha(fecha);
+    const plan = ROUTINE_DATA.semana[key];
+    const fstr = fmtFecha(fecha);
+    const reg = App.state.consistencia[fstr] || {};
+    const esFuturo = inicioDelDia(fecha) > inicioDelDia(new Date());
+    const esHoy = fstr === hoyStr();
+
+    let clase;
+    if(plan.tipo === 'descanso'){
+      clase = 'dia-gris';
+    } else if(esFuturo){
+      clase = 'dia-neutro';
+    } else {
+      clase = Dashboard.diaCumplido(fecha) ? 'dia-verde' : 'dia-rojo';
+    }
+
+    const mostrarNatacion = plan.tipo.includes('natacion');
+
+    return `
+      <div class="dia-card ${clase}">
+        <div class="dia-nombre">${DIAS_LABEL[key]} ${esHoy ? '<span class="hoy-tag">Hoy</span>' : ''}</div>
+        <div class="dia-fecha">${fstr}</div>
+        <div class="dia-sesion">${plan.sesion}</div>
+        ${plan.tipo !== 'descanso' ? `<label class="check-item small"><input type="checkbox" data-dia="${fstr}" data-campo="gym" ${reg.gym ? 'checked' : ''}> Gym</label>` : ''}
+        ${mostrarNatacion ? `<label class="check-item small"><input type="checkbox" data-dia="${fstr}" data-campo="natacion" ${reg.natacion ? 'checked' : ''}> Natación</label>` : ''}
+        ${plan.tipo === 'descanso' ? `<label class="check-item small"><input type="checkbox" data-dia="${fstr}" data-campo="descanso" ${reg.descanso ? 'checked' : ''}> Descanso activo</label>` : ''}
+      </div>
+    `;
+  },
+
+  bindChecks(){
+    document.querySelectorAll('[data-dia]').forEach(chk => {
+      chk.addEventListener('change', () => {
+        const { dia, campo } = chk.dataset;
+        App.state.consistencia[dia] = App.state.consistencia[dia] || {};
+        App.state.consistencia[dia][campo] = chk.checked;
+        App.save();
+        this.render();
+        App.renderIcons();
+      });
+    });
+  },
+
+  resumenMensual(){
+    const hoy = new Date();
+    const anio = hoy.getFullYear(), mes = hoy.getMonth();
+    let gymPlan = 0, gymOk = 0, natPlan = 0, natOk = 0;
+    for(let d = 1; d <= hoy.getDate(); d++){
+      const fecha = new Date(anio, mes, d);
+      const key = diaKeyDeFecha(fecha);
+      const plan = ROUTINE_DATA.semana[key];
+      const fstr = fmtFecha(fecha);
+      const reg = App.state.consistencia[fstr] || {};
+      if(plan.tipo.includes('gym')){ gymPlan++; if(reg.gym) gymOk++; }
+      if(plan.tipo.includes('natacion')){ natPlan++; if(reg.natacion) natOk++; }
+    }
+    return {
+      gym: gymPlan ? Math.round((gymOk/gymPlan) * 100) : 0,
+      natacion: natPlan ? Math.round((natOk/natPlan) * 100) : 0
+    };
+  }
+};
+
+/* ============================================================
+   PESTAÑA 4: NUTRICIÓN Y SUPLEMENTACIÓN
+   ============================================================ */
+const Nutricion = {
+  render(){
+    const cont = document.getElementById('tab-nutricion');
+    const fecha = hoyStr();
+    const yaRegistrado = App.state.pesoCorporal.find(p => p.fecha === fecha);
+    const tasa = this.tasaGanancia();
+    const supHeatmap = this.renderHeatmap();
+    const porcionHoy = (App.state.suplementacion[fecha] || {}).ganadorPorcion;
+
+    cont.innerHTML = `
+      <div class="card">
+        <div class="card-title-sm">Peso corporal de hoy</div>
+        <div class="peso-input-row">
+          <input type="number" step="0.1" id="input-peso" class="input-num" placeholder="kg" value="${yaRegistrado ? yaRegistrado.kg : ''}">
+          <button id="btn-guardar-peso" class="btn-primary">Guardar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title-sm">Tasa de ganancia</div>
+        ${tasa}
+      </div>
+      <div class="card">
+        <div class="card-title-sm">Porción del ganador hoy</div>
+        <div class="porcion-botones">
+          <button class="btn-small" data-porcion="1/4">1/4</button>
+          <button class="btn-small" data-porcion="1/3">1/3</button>
+          <button class="btn-small" data-porcion="1/2">1/2</button>
+        </div>
+        <div class="porcion-actual">Hoy: ${porcionHoy || 'sin registrar'}</div>
+      </div>
+      <div class="card">
+        <div class="card-title-sm">Historial de suplementación (14 días)</div>
+        ${supHeatmap}
+      </div>
+    `;
+
+    document.getElementById('btn-guardar-peso').addEventListener('click', () => {
+      const val = parseFloat(document.getElementById('input-peso').value);
+      if(isNaN(val) || val <= 0){ alert('Ingresa un peso válido.'); return; }
+      const existente = App.state.pesoCorporal.find(p => p.fecha === fecha);
+      if(existente){
+        if(!confirm('Ya registraste tu peso hoy. ¿Deseas sobrescribirlo?')) return;
+        existente.kg = val;
+      } else {
+        App.state.pesoCorporal.push({ fecha, kg: val });
+      }
+      App.save();
+      App.toast('Peso guardado');
+      this.render();
+      App.renderIcons();
+    });
+
+    document.querySelectorAll('[data-porcion]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        App.state.suplementacion[fecha] = App.state.suplementacion[fecha] || {};
+        App.state.suplementacion[fecha].ganadorPorcion = btn.dataset.porcion;
+        App.state.suplementacion[fecha].ganador = true;
+        App.save();
+        App.toast('Porción registrada');
+        this.render();
+        App.renderIcons();
+      });
+    });
+  },
+
+  promedioUltimos(dias, offsetDias){
+    const pesos = App.state.pesoCorporal;
+    let suma = 0, n = 0;
+    for(let i = 0; i < dias; i++){
+      const fecha = addDias(new Date(), -(i + offsetDias));
+      const fstr = fmtFecha(fecha);
+      const p = pesos.find(x => x.fecha === fstr);
+      if(p){ suma += p.kg; n++; }
+    }
+    return n ? suma / n : null;
+  },
+
+  tasaGanancia(){
+    const actual = this.promedioUltimos(7, 0);
+    const anterior = this.promedioUltimos(7, 7);
+    if(actual === null || anterior === null){
+      return `<div class="muted">Aún no hay suficientes datos (necesitas al menos 14 días de registros de peso).</div>`;
+    }
+    const diffSemanal = actual - anterior;
+    const proyeccionMensual = diffSemanal * 4.345;
+    let clase = 'semaforo-gris', mensaje = 'Peso estable o bajando: sube calorías.';
+    if(proyeccionMensual >= 0.3 && proyeccionMensual <= 0.5){
+      clase = 'semaforo-verde'; mensaje = 'Ganancia ideal, mantén el rumbo.';
+    } else if(proyeccionMensual > 0.5){
+      clase = 'semaforo-amarillo'; mensaje = 'Ganancia rápida (riesgo de grasa): reduce el ganador.';
+    }
+    return `<div class="semaforo ${clase}">${proyeccionMensual.toFixed(2)} kg/mes proyectado — ${mensaje}</div>`;
+  },
+
+  renderHeatmap(){
+    const dias = Array.from({length: 14}, (_, i) => addDias(new Date(), -(13 - i)));
+    return ROUTINE_DATA.suplementos.map(s => {
+      const celdas = dias.map(d => {
+        const fstr = fmtFecha(d);
+        const marcado = (App.state.suplementacion[fstr] || {})[s.id];
+        return `<span class="heat-cell ${marcado ? 'heat-on' : ''}" title="${fstr}"></span>`;
+      }).join('');
+      return `<div class="heat-row"><span class="heat-label">${s.nombre}</span><div class="heat-cells">${celdas}</div></div>`;
+    }).join('');
+  }
+};
+
+/* ============================================================
+   PESTAÑA 5: ANALÍTICAS
+   ============================================================ */
+const Analiticas = {
+  chartPeso: null,
+  chart1RM: null,
+  ejerciciosVisibles: null,
+
+  render(){
+    const cont = document.getElementById('tab-analiticas');
+    const chartsDisponibles = typeof Chart !== 'undefined';
+
+    const principales = [];
+    Object.values(ROUTINE_DATA.sesiones).forEach(lista => {
+      lista.forEach(ej => { if(ej.principal && !principales.find(p => p.id === ej.id)) principales.push(ej); });
+    });
+    if(!this.ejerciciosVisibles) this.ejerciciosVisibles = new Set(principales.map(p => p.id));
+
+    cont.innerHTML = `
+      <div class="card">
+        <div class="card-title-sm">Evolución del peso corporal</div>
+        ${chartsDisponibles ? '<canvas id="chart-peso" height="220"></canvas>' : '<div class="muted">Gráficos no disponibles sin conexión. Tus datos se siguen guardando con normalidad.</div>'}
+      </div>
+      <div class="card">
+        <div class="card-title-sm">1RM estimado — ejercicios principales</div>
+        <div class="chip-selector">
+          ${principales.map(p => `<label class="chip"><input type="checkbox" data-toggle-ej="${p.id}" ${this.ejerciciosVisibles.has(p.id) ? 'checked' : ''}> ${p.nombre}</label>`).join('')}
+        </div>
+        ${chartsDisponibles ? '<canvas id="chart-1rm" height="240"></canvas>' : '<div class="muted">Gráficos no disponibles sin conexión.</div>'}
+      </div>
+      <div class="card">
+        <div class="card-title-sm">Detector de patrones: natación y rendimiento</div>
+        <div id="patron-resultado">${this.detectarPatrones()}</div>
+      </div>
+    `;
+
+    if(chartsDisponibles){
+      this.renderChartPeso();
+      this.renderChart1RM(principales);
+    }
+
+    document.querySelectorAll('[data-toggle-ej]').forEach(chk => {
+      chk.addEventListener('change', () => {
+        if(chk.checked) this.ejerciciosVisibles.add(chk.dataset.toggleEj);
+        else this.ejerciciosVisibles.delete(chk.dataset.toggleEj);
+        if(chartsDisponibles) this.renderChart1RM(principales);
+      });
+    });
+  },
+
+  renderChartPeso(){
+    const ctx = document.getElementById('chart-peso');
+    if(!ctx) return;
+    if(this.chartPeso){ this.chartPeso.destroy(); this.chartPeso = null; }
+    const pesos = App.state.pesoCorporal.slice().sort((a,b) => a.fecha.localeCompare(b.fecha));
+    if(pesos.length < 2){
+      ctx.replaceWith(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Registra al menos 2 días de peso corporal para ver el gráfico.' }));
+      return;
+    }
+    const labels = pesos.map(p => p.fecha);
+    const valores = pesos.map(p => p.kg);
+    const media7 = valores.map((_, i) => {
+      const ventana = valores.slice(Math.max(0, i - 6), i + 1);
+      return ventana.reduce((a,b) => a+b, 0) / ventana.length;
+    });
+    const meta = App.state.config.pesoMeta;
+
+    this.chartPeso = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Peso (kg)', data: valores, borderColor: '#3B82F6', backgroundColor: 'transparent', tension: 0.25 },
+          { label: 'Media móvil 7d', data: media7, borderColor: '#22C55E', backgroundColor: 'transparent', tension: 0.25 },
+          { label: 'Meta', data: labels.map(() => meta), borderColor: '#EF4444', borderDash: [6,4], pointRadius: 0 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#E5E7EB' } } },
+        scales: {
+          x: { ticks: { color: '#9CA3AF' }, grid: { color: '#1F2937' } },
+          y: { ticks: { color: '#9CA3AF' }, grid: { color: '#1F2937' } }
+        }
+      }
+    });
+  },
+
+  // Agrupa por semana (lunes de esa semana) el mejor 1RM estimado logrado en ese ejercicio
+  datosSemanales1RM(ejercicioId){
+    const porSemana = {};
+    App.state.entrenamientos.forEach(ent => {
+      ent.registros.forEach(reg => {
+        if(reg.ejercicioId !== ejercicioId) return;
+        const semanaKey = fmtFecha(lunesDeSemana(parseFecha(ent.fecha)));
+        reg.series.forEach(s => {
+          if(!s.kg || !s.reps) return;
+          const rm = epley1RM(s.kg, s.reps);
+          if(!porSemana[semanaKey] || rm > porSemana[semanaKey]) porSemana[semanaKey] = rm;
+        });
+      });
+    });
+    return porSemana;
+  },
+
+  renderChart1RM(principales){
+    const ctx = document.getElementById('chart-1rm');
+    if(!ctx) return;
+    if(this.chart1RM){ this.chart1RM.destroy(); this.chart1RM = null; }
+
+    const visibles = principales.filter(p => this.ejerciciosVisibles.has(p.id));
+    const todasSemanas = new Set();
+    const datosPorEj = {};
+    visibles.forEach(p => {
+      datosPorEj[p.id] = this.datosSemanales1RM(p.id);
+      Object.keys(datosPorEj[p.id]).forEach(sem => todasSemanas.add(sem));
+    });
+    const semanas = Array.from(todasSemanas).sort();
+
+    if(semanas.length < 2){
+      ctx.replaceWith(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Registra entrenamientos de al menos 2 semanas distintas para ver la evolución del 1RM.' }));
+      return;
+    }
+
+    const colores = ['#22C55E','#3B82F6','#EF4444','#F59E0B','#A855F7','#EC4899','#14B8A6','#F97316','#6366F1'];
+    const datasets = visibles.map((p, i) => ({
+      label: p.nombre,
+      data: semanas.map(sem => datosPorEj[p.id][sem] !== undefined ? datosPorEj[p.id][sem] : null),
+      borderColor: colores[i % colores.length],
+      backgroundColor: 'transparent',
+      spanGaps: true
+    }));
+
+    this.chart1RM = new Chart(ctx, {
+      type: 'line',
+      data: { labels: semanas, datasets },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#E5E7EB' } } },
+        scales: {
+          x: { ticks: { color: '#9CA3AF' }, grid: { color: '#1F2937' } },
+          y: { ticks: { color: '#9CA3AF' }, grid: { color: '#1F2937' } }
+        }
+      }
+    });
+  },
+
+  /*
+    Detector de patrones (lógica exacta):
+    1) Para cada sesión de viernes (Upper B) y sábado (Lower C), promedio de 1RM estimado de ejercicios principales.
+    2) Comparar contra el promedio de las mismas sesiones de las 3 semanas anteriores.
+    3) Si la caída es >= 5% y el jueves anterior tuvo natación marcada -> alerta de patrón negativo.
+    4) Si con natación el rendimiento se mantiene o sube -> mensaje positivo.
+    5) Requiere mínimo 3 semanas previas de datos; antes de eso, mensaje de "recolectando datos".
+  */
+  detectarPatrones(){
+    const sesionesObjetivo = [
+      { dia: 'viernes', sesion: 'Upper B', offsetAJueves: -1 },
+      { dia: 'sabado', sesion: 'Lower C', offsetAJueves: -2 }
+    ];
+
+    const promedioPrincipal1RM = (fechaStr, sesionNombre) => {
+      const ent = App.state.entrenamientos.find(e => e.fecha === fechaStr && e.sesion === sesionNombre);
+      if(!ent) return null;
+      const principalesIds = ROUTINE_DATA.sesiones[sesionNombre].filter(e => e.principal).map(e => e.id);
+      const valores = [];
+      ent.registros.forEach(reg => {
+        if(!principalesIds.includes(reg.ejercicioId)) return;
+        let mejor = null;
+        reg.series.forEach(s => {
+          if(!s.kg || !s.reps) return;
+          const rm = epley1RM(s.kg, s.reps);
+          if(!mejor || rm > mejor) mejor = rm;
+        });
+        if(mejor) valores.push(mejor);
+      });
+      return valores.length ? valores.reduce((a,b) => a+b, 0) / valores.length : null;
+    };
+
+    const mensajes = [];
+
+    sesionesObjetivo.forEach(({ dia, sesion, offsetAJueves }) => {
+      const instancias = App.state.entrenamientos
+        .filter(e => e.sesion === sesion)
+        .map(e => e.fecha)
+        .sort();
+
+      if(instancias.length === 0) return;
+
+      if(instancias.length < 4){
+        mensajes.push(`${sesion}: Recolectando datos (semana ${instancias.length} de 3).`);
+        return;
+      }
+
+      const ultima = instancias[instancias.length - 1];
+      const anteriores = instancias.slice(instancias.length - 4, instancias.length - 1);
+
+      const rmUltima = promedioPrincipal1RM(ultima, sesion);
+      const rmAnteriores = anteriores.map(f => promedioPrincipal1RM(f, sesion)).filter(v => v !== null);
+      if(rmUltima === null || rmAnteriores.length === 0) return;
+
+      const promAnterior = rmAnteriores.reduce((a,b) => a+b, 0) / rmAnteriores.length;
+      const caidaPct = ((promAnterior - rmUltima) / promAnterior) * 100;
+
+      const fechaUltima = parseFecha(ultima);
+      const fstrJueves = fmtFecha(addDias(fechaUltima, offsetAJueves));
+      const huboNatacion = !!(App.state.consistencia[fstrJueves] && App.state.consistencia[fstrJueves].natacion);
+
+      if(caidaPct >= 5 && huboNatacion){
+        mensajes.push(`Patrón: tu rendimiento del ${DIAS_LABEL[dia]} cayó ${caidaPct.toFixed(1)}% tras la natación del jueves. Considera reducir la intensidad del nado o adelantar los ejercicios pesados.`);
+      } else if(huboNatacion){
+        mensajes.push(`La natación no está afectando tu rendimiento del ${DIAS_LABEL[dia]}. Buen manejo de fatiga.`);
+      }
+    });
+
+    if(mensajes.length === 0){
+      return `<div class="muted">Recolectando datos (semana 1 de 3).</div>`;
+    }
+    return mensajes.map(m => `<div class="patron-msg">${m}</div>`).join('');
+  }
+};
+
+/* ============================================================
+   ARRANQUE
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>
