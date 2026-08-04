@@ -218,8 +218,8 @@ main#main-content{max-width:960px; margin:0 auto; padding:16px; }
     <button data-tab="dashboard"><span data-lucide="layout-dashboard"></span> Dashboard</button>
     <button data-tab="registro"><span data-lucide="clipboard-list"></span> Registro</button>
     <button data-tab="calendario"><span data-lucide="calendar-days"></span> Calendario</button>
-    <button data-tab="nutricion"><span data-lucide="apple"></span> NutriciÃ³n</button>
-    <button data-tab="analiticas"><span data-lucide="line-chart"></span> AnalÃ­ticas</button>
+    <button data-tab="nutricion"><span data-lucide="apple"></span> Nutrición</button>
+    <button data-tab="analiticas"><span data-lucide="line-chart"></span> Analíticas</button>
   </nav>
   <div class="header-actions">
     <button class="icon-btn" id="btn-exportar" title="Exportar respaldo JSON"><span data-lucide="download"></span></button>
@@ -242,8 +242,8 @@ main#main-content{max-width:960px; margin:0 auto; padding:16px; }
   <button data-tab="dashboard"><span data-lucide="layout-dashboard"></span> Dashboard</button>
   <button data-tab="registro"><span data-lucide="clipboard-list"></span> Registro</button>
   <button data-tab="calendario"><span data-lucide="calendar-days"></span> Calendario</button>
-  <button data-tab="nutricion"><span data-lucide="apple"></span> NutriciÃ³n</button>
-  <button data-tab="analiticas"><span data-lucide="line-chart"></span> AnalÃ­ticas</button>
+  <button data-tab="nutricion"><span data-lucide="apple"></span> Nutrición</button>
+  <button data-tab="analiticas"><span data-lucide="line-chart"></span> Analíticas</button>
 </nav>
 
 <div id="toast-container"></div>
@@ -253,7 +253,7 @@ main#main-content{max-width:960px; margin:0 auto; padding:16px; }
    MANEJO GLOBAL DE ERRORES
    Si algo falla (p. ej. Safari/iOS bloqueando localStorage en un
    archivo local), se muestra un aviso en pantalla en lugar de dejar
-   la app en blanco sin ninguna pista de quÃ© pasÃ³.
+   la app en blanco sin ninguna pista de qué pasó.
    ============================================================ */
 function mostrarErrorFatal(msg){
   const cont = document.getElementById('main-content');
@@ -261,9 +261,9 @@ function mostrarErrorFatal(msg){
   const div = document.createElement('div');
   div.className = 'card';
   div.style.borderColor = '#EF4444';
-  div.innerHTML = '<div class="card-title-sm" style="color:#EF4444">OcurriÃ³ un error</div>' +
+  div.innerHTML = '<div class="card-title-sm" style="color:#EF4444">Ocurrió un error</div>' +
     '<div class="muted">' + String(msg).replace(/</g,'&lt;') + '</div>' +
-    '<div class="muted" style="margin-top:8px">Si esto persiste en tu celular, intenta abrir el archivo con "Abrir en Safari" en vez de la vista previa, o agrÃ©galo a tu pantalla de inicio.</div>';
+    '<div class="muted" style="margin-top:8px">Si esto persiste en tu celular, intenta abrir el archivo con "Abrir en Safari" en vez de la vista previa, o agrégalo a tu pantalla de inicio.</div>';
   cont.prepend(div);
 }
 window.addEventListener('error', (e) => mostrarErrorFatal(e.message || 'Error desconocido'));
@@ -274,8 +274,8 @@ window.addEventListener('unhandledrejection', (e) => mostrarErrorFatal((e.reason
    ============================================================ */
 const ROUTINE_DATA = {
   "perfil": { "nombre": "Usuario", "estatura_m": 1.85, "peso_inicial_kg": 88, "peso_meta_kg": 90 },
-  // v2: nueva estructura semanal â€” viernes pasa a descanso activo, sÃ¡bado (Lower C) se
-  // vuelve "gym_opcional" y domingo pasa a ser Upper B (dÃ­a de gym fijo normal).
+  // v2: nueva estructura semanal — viernes pasa a descanso activo, sábado (Lower C) se
+  // vuelve "gym_opcional" y domingo pasa a ser Upper B (día de gym fijo normal).
   "semana": {
     "lunes":     { "sesion": "Lower A", "tipo": "gym" },
     "martes":    { "sesion": "Descanso", "tipo": "descanso" },
@@ -289,54 +289,54 @@ const ROUTINE_DATA = {
     // v2: se elimina "pallof" (queda en 5 ejercicios); squat y rdl suben su RIR objetivo a "2-3".
     "Lower A": [
       { "id": "squat",        "nombre": "Sentadilla trasera barra",              "series": 4, "reps": "5-7",       "rir": "2-3", "principal": true },
-      { "id": "prensa",       "nombre": "Prensa 45Â° / goblet pesada",            "series": 3, "reps": "8-10",      "rir": "1-2", "principal": false },
+      { "id": "prensa",       "nombre": "Prensa 45° / goblet pesada",            "series": 3, "reps": "8-10",      "rir": "1-2", "principal": false },
       { "id": "rdl",          "nombre": "Peso muerto rumano barra",              "series": 3, "reps": "8-10",      "rir": "2-3", "principal": true },
       { "id": "zancada_rev",  "nombre": "Zancada reversa con mancuernas",        "series": 2, "reps": "10-12 c/p", "rir": "1",   "principal": false },
-      { "id": "gemelo_pie_a", "nombre": "Gemelo de pie (escalÃ³n + mancuerna)",   "series": 4, "reps": "10-12",     "rir": "1",   "principal": false }
+      { "id": "gemelo_pie_a", "nombre": "Gemelo de pie (escalón + mancuerna)",   "series": 4, "reps": "10-12",     "rir": "1",   "principal": false }
     ],
     // v2: se agregan "variantes" formalizadas a 4 ejercicios; "banca" recibe un aviso fijo
-    // en vez de variantes (el peck deck no sustituye el estÃ­mulo del press plano).
+    // en vez de variantes (el peck deck no sustituye el estímulo del press plano).
     "Upper A": [
       { "id": "banca",        "nombre": "Press banca plano barra",               "series": 4, "reps": "6-8",   "rir": "2", "principal": true,
-        "avisoVariante": "El peck deck es un ejercicio de aislamiento y no sustituye el estÃ­mulo del press plano. Si el banco estÃ¡ ocupado, mejor usa press mancuernas plano o flexiones con lastre." },
-      { "id": "csr",          "nombre": "Chest supported row (mÃ¡quina)",         "series": 4, "reps": "8-10",  "rir": "2", "principal": true },
-      { "id": "inclinado_db", "nombre": "Press inclinado mancuernas (15-30Â°)",   "series": 3, "reps": "10-12", "rir": "1", "principal": false, "variantes": ["MÃ¡quina press convergente"] },
+        "avisoVariante": "El peck deck es un ejercicio de aislamiento y no sustituye el estímulo del press plano. Si el banco está ocupado, mejor usa press mancuernas plano o flexiones con lastre." },
+      { "id": "csr",          "nombre": "Chest supported row (máquina)",         "series": 4, "reps": "8-10",  "rir": "2", "principal": true },
+      { "id": "inclinado_db", "nombre": "Press inclinado mancuernas (15-30°)",   "series": 3, "reps": "10-12", "rir": "1", "principal": false, "variantes": ["Máquina press convergente"] },
       { "id": "remo_uni",     "nombre": "Remo mancuerna unilateral",             "series": 3, "reps": "10-12", "rir": "1", "principal": false, "variantes": ["Chest supported row unilateral"] },
       { "id": "facepull",     "nombre": "Face pulls en polea",                   "series": 3, "reps": "15",    "rir": "1", "principal": false, "variantes": ["Reverse peck deck"] },
-      { "id": "curl_z",       "nombre": "Curl bÃ­ceps barra Z",                   "series": 3, "reps": "8-10",  "rir": "1", "principal": false, "variantes": ["Curl en polea", "Curl sentado con mancuernas"] },
-      { "id": "triceps_pol",  "nombre": "ExtensiÃ³n trÃ­ceps polea",               "series": 3, "reps": "10-12", "rir": "1", "principal": false }
+      { "id": "curl_z",       "nombre": "Curl bíceps barra Z",                   "series": 3, "reps": "8-10",  "rir": "1", "principal": false, "variantes": ["Curl en polea", "Curl sentado con mancuernas"] },
+      { "id": "triceps_pol",  "nombre": "Extensión tríceps polea",               "series": 3, "reps": "10-12", "rir": "1", "principal": false }
     ],
-    // v2: reordenado â€” refleja quÃ© se sacrifica primero si falta tiempo; "gemelo_sent" pasa al
+    // v2: reordenado — refleja qué se sacrifica primero si falta tiempo; "gemelo_sent" pasa al
     // final marcado con "opcionalSiFaltaTiempo".
     "Lower B": [
       { "id": "hipthrust",    "nombre": "Hip thrust con barra",                  "series": 4, "reps": "8-10",      "rir": "1-2", "principal": true },
-      { "id": "bulgaro",      "nombre": "Split bÃºlgaro con mancuernas",          "series": 3, "reps": "10-12 c/p", "rir": "1",   "principal": false },
-      { "id": "femoral",      "nombre": "Curl femoral (nÃ³rdico/fitball)",        "series": 3, "reps": "10-12",     "rir": "1",   "principal": false },
+      { "id": "bulgaro",      "nombre": "Split búlgaro con mancuernas",          "series": 3, "reps": "10-12 c/p", "rir": "1",   "principal": false },
+      { "id": "femoral",      "nombre": "Curl femoral (nórdico/fitball)",        "series": 3, "reps": "10-12",     "rir": "1",   "principal": false },
       { "id": "sissy",        "nombre": "Sissy squat asistida / step-up alto",   "series": 3, "reps": "12-15",     "rir": "1",   "principal": false },
-      { "id": "abduccion",    "nombre": "AbducciÃ³n banda / patada polea",        "series": 3, "reps": "15",        "rir": "-",   "principal": false },
+      { "id": "abduccion",    "nombre": "Abducción banda / patada polea",        "series": 3, "reps": "15",        "rir": "-",   "principal": false },
       { "id": "gemelo_sent",  "nombre": "Gemelo sentado (banco + carga)",        "series": 4, "reps": "12-15",     "rir": "0-1", "principal": false, "opcionalSiFaltaTiempo": true }
     ],
     "Upper B": [
       { "id": "militar",      "nombre": "Press militar barra de pie",            "series": 4, "reps": "6-8",   "rir": "2",   "principal": true },
-      { "id": "dominadas",    "nombre": "Dominadas lastradas / jalÃ³n polea",     "series": 4, "reps": "8-10",  "rir": "1-2", "principal": true },
+      { "id": "dominadas",    "nombre": "Dominadas lastradas / jalón polea",     "series": 4, "reps": "8-10",  "rir": "1-2", "principal": true },
       { "id": "plano_db",     "nombre": "Press plano mancuernas / fondos",       "series": 3, "reps": "10-12", "rir": "1",   "principal": false },
       { "id": "remo_polea",   "nombre": "Remo polea baja agarre neutro",         "series": 3, "reps": "10-12", "rir": "1",   "principal": false },
       { "id": "laterales",    "nombre": "Elevaciones laterales",                 "series": 4, "reps": "12-15", "rir": "0-1", "principal": false },
       { "id": "curl_alt",     "nombre": "Curl alterno / predicador",             "series": 3, "reps": "10-12", "rir": "1",   "principal": false },
-      { "id": "press_cerr",   "nombre": "Press cerrado / extensiÃ³n sobre cabeza","series": 3, "reps": "10-12", "rir": "1",   "principal": false }
+      { "id": "press_cerr",   "nombre": "Press cerrado / extensión sobre cabeza","series": 3, "reps": "10-12", "rir": "1",   "principal": false }
     ],
     // v2: se eliminan "opcional_sup" y "bodysaw" (queda en 4 ejercicios).
     "Lower C": [
       { "id": "squat_pausa",  "nombre": "Sentadilla trasera con pausa (2 seg)",  "series": 4, "reps": "5-6",   "rir": "2",   "principal": true },
-      { "id": "buenos_dias",  "nombre": "Buenos dÃ­as barra / hiperextensiÃ³n 45Â°","series": 3, "reps": "10-12", "rir": "2",   "principal": false },
+      { "id": "buenos_dias",  "nombre": "Buenos días barra / hiperextensión 45°","series": 3, "reps": "10-12", "rir": "2",   "principal": false },
       { "id": "hipthrust_p",  "nombre": "Hip thrust pesado",                     "series": 4, "reps": "6-8",   "rir": "1-2", "principal": true },
       { "id": "gemelo_pie_c", "nombre": "Gemelo de pie",                         "series": 3, "reps": "10-12", "rir": "1",   "principal": false }
     ]
   },
-  // v2: se simplifica de 6 a 4 Ã­tems, agrupando D3 + Zinc en "combo_am".
+  // v2: se simplifica de 6 a 4 ítems, agrupando D3 + Zinc en "combo_am".
   "suplementos": [
-    { "id": "creatina", "nombre": "Creatina monohidratada", "dosis": "6 g",          "momento": "Cualquier hora, todos los dÃ­as" },
-    { "id": "ganador",  "nombre": "Serious Mass",           "dosis": "1/2-1/3 porciÃ³n (400-600 kcal)", "momento": "Alrededor del entreno" },
+    { "id": "creatina", "nombre": "Creatina monohidratada", "dosis": "6 g",          "momento": "Cualquier hora, todos los días" },
+    { "id": "ganador",  "nombre": "Serious Mass",           "dosis": "1/2-1/3 porción (400-600 kcal)", "momento": "Alrededor del entreno" },
     { "id": "combo_am", "nombre": "Combo AM: D3 + Zinc",    "dosis": "1,000-2,000 UI D3 + 10-15 mg Zinc", "momento": "Con el desayuno, un solo check cubre ambos" },
     { "id": "magnesio", "nombre": "Magnesio glicinato",     "dosis": "200-400 mg",    "momento": "Noche" },
     { "id": "omega3",   "nombre": "Omega-3 (EPA+DHA)",      "dosis": "1-2 g",         "momento": "Con comidas" }
@@ -347,7 +347,7 @@ const ROUTINE_DATA = {
    UTILIDADES DE FECHAS
    ============================================================ */
 const DIAS_JS = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado']; // indexado por Date.getDay()
-const DIAS_LABEL = { lunes:'Lunes', martes:'Martes', miercoles:'MiÃ©rcoles', jueves:'Jueves', viernes:'Viernes', sabado:'SÃ¡bado', domingo:'Domingo' };
+const DIAS_LABEL = { lunes:'Lunes', martes:'Martes', miercoles:'Miércoles', jueves:'Jueves', viernes:'Viernes', sabado:'Sábado', domingo:'Domingo' };
 
 function fmtFecha(date){
   const y = date.getFullYear(), m = String(date.getMonth()+1).padStart(2,'0'), d = String(date.getDate()).padStart(2,'0');
@@ -367,13 +367,13 @@ function lunesDeSemana(date){
   const diff = (dow === 0 ? -6 : 1 - dow);
   return addDias(d, diff);
 }
-// FÃ³rmula de Epley para estimar la carga mÃ¡xima en una repeticiÃ³n: 1RM = peso Ã— (1 + reps/30)
+// Fórmula de Epley para estimar la carga máxima en una repetición: 1RM = peso × (1 + reps/30)
 function epley1RM(kg, reps){
   return kg * (1 + reps/30);
 }
 
-// v2: "gym_opcional" (sÃ¡bado) contiene la palabra "gym" como substring, asÃ­ que cualquier
-// chequeo con .includes('gym') lo confundirÃ­a con un dÃ­a obligatorio. Estos helpers evitan ese bug.
+// v2: "gym_opcional" (sábado) contiene la palabra "gym" como substring, así que cualquier
+// chequeo con .includes('gym') lo confundiría con un día obligatorio. Estos helpers evitan ese bug.
 function esDiaGymObligatorio(tipo){
   return tipo === 'gym' || tipo === 'gym+natacion';
 }
@@ -381,25 +381,25 @@ function esDiaGymOpcional(tipo){
   return tipo === 'gym_opcional';
 }
 
-// v2: extrae el primer nÃºmero de un rango de RIR objetivo (ej. "2-3" -> 2, "-" -> null)
+// v2: extrae el primer número de un rango de RIR objetivo (ej. "2-3" -> 2, "-" -> null)
 function parseObjetivoRir(rirStr){
   const m = String(rirStr).match(/\d+/);
   return m ? parseInt(m[0], 10) : null;
 }
 
-// v2: guÃ­a fija de interpretaciÃ³n de RIR, mostrada en el Ã­cono de ayuda (?) del registro
-const GUIA_RIR = `RIR 0 = fallo total, no sale ni una repeticiÃ³n mÃ¡s.
-RIR 1 = una repeticiÃ³n mÃ¡s serÃ­a posible, pero al lÃ­mite.
-RIR 2 = quedan 2 repeticiones limpias en el tanque, con la misma tÃ©cnica.
-RIR 3+ = la serie se sintiÃ³ exigente pero claramente controlada.
+// v2: guía fija de interpretación de RIR, mostrada en el ícono de ayuda (?) del registro
+const GUIA_RIR = `RIR 0 = fallo total, no sale ni una repetición más.
+RIR 1 = una repetición más sería posible, pero al límite.
+RIR 2 = quedan 2 repeticiones limpias en el tanque, con la misma técnica.
+RIR 3+ = la serie se sintió exigente pero claramente controlada.
 
-PregÃºntate: "si me obligaran a seguir, Â¿podrÃ­a hacer 2 reps mÃ¡s
-con la misma tÃ©cnica (mismo rango, misma velocidad)?" Diferencia
-el esfuerzo percibido (respiraciÃ³n, ardor) de la distancia real al fallo.`;
+Pregúntate: "si me obligaran a seguir, ¿podría hacer 2 reps más
+con la misma técnica (mismo rango, misma velocidad)?" Diferencia
+el esfuerzo percibido (respiración, ardor) de la distancia real al fallo.`;
 
 // v2: resuelve el nombre para mostrar de un ejercicio guardado en el historial.
 // Si el ejercicio fue eliminado de ROUTINE_DATA (pallof, opcional_sup, bodysaw, etc.),
-// nunca lanza error: usa el nombre que quedÃ³ guardado en el registro, o un texto genÃ©rico.
+// nunca lanza error: usa el nombre que quedó guardado en el registro, o un texto genérico.
 function resolverNombreEjercicio(ejercicioId, nombreGuardado){
   if(nombreGuardado) return nombreGuardado;
   for(const lista of Object.values(ROUTINE_DATA.sesiones)){
@@ -414,10 +414,10 @@ function resolverNombreEjercicio(ejercicioId, nombreGuardado){
    ============================================================ */
 const STORAGE_KEY = 'hipertrofia_app_v1';
 
-// Safari en iOS puede lanzar SecurityError al usar localStorage cuando la pÃ¡gina
+// Safari en iOS puede lanzar SecurityError al usar localStorage cuando la página
 // se abre como archivo local (file://) o dentro de ciertas vistas previas.
 // Este envoltorio evita que ese error tumbe toda la app: si localStorage falla,
-// se usa memoria RAM como respaldo (los datos duran mientras la pestaÃ±a siga abierta)
+// se usa memoria RAM como respaldo (los datos duran mientras la pestaña siga abierta)
 // y se expone `disponible` para avisarle al usuario que exporte su progreso.
 const SafeLocalStorage = (function(){
   let memoria = {};
@@ -450,9 +450,9 @@ const SafeLocalStorage = (function(){
 
 // v2: migra un estado guardado con schemaVersion 1 al esquema actual (2), en el mismo
 // objeto (in-place) y SIN tocar entrenamientos/pesoCorporal/consistencia/suplementacion
-// existentes. La forma de esos datos no cambiÃ³ en v2 (los cambios de v2 viven en
-// ROUTINE_DATA, que nunca se guarda en localStorage); esta funciÃ³n queda explÃ­cita para
-// dejar el patrÃ³n listo si una futura versiÃ³n sÃ­ necesita mover/renombrar campos guardados.
+// existentes. La forma de esos datos no cambió en v2 (los cambios de v2 viven en
+// ROUTINE_DATA, que nunca se guarda en localStorage); esta función queda explícita para
+// dejar el patrón listo si una futura versión sí necesita mover/renombrar campos guardados.
 function migrarV1aV2(estado){
   estado.schemaVersion = 2;
   return estado;
@@ -470,8 +470,8 @@ const Storage = {
       config: { fechaInicio: hoy, pesoMeta: ROUTINE_DATA.perfil.peso_meta_kg, ultimaDescarga: hoy }
     };
   },
-  // Carga el estado desde localStorage; si no existe, estÃ¡ corrupto, o el navegador
-  // lo bloquea (tÃ­pico en Safari/iOS con archivos locales), crea uno nuevo sin romper la app.
+  // Carga el estado desde localStorage; si no existe, está corrupto, o el navegador
+  // lo bloquea (típico en Safari/iOS con archivos locales), crea uno nuevo sin romper la app.
   load(){
     try{
       const raw = SafeLocalStorage.getItem(STORAGE_KEY);
@@ -522,7 +522,7 @@ const Storage = {
       try{
         const data = JSON.parse(e.target.result);
         if(typeof data.schemaVersion === 'undefined'){
-          alert('El archivo no tiene un formato vÃ¡lido (falta schemaVersion).');
+          alert('El archivo no tiene un formato válido (falta schemaVersion).');
           return;
         }
         callback(data);
@@ -535,7 +535,7 @@ const Storage = {
 };
 
 /* ============================================================
-   NÃšCLEO DE LA APP: navegaciÃ³n, estado global, utilidades UI
+   NÚCLEO DE LA APP: navegación, estado global, utilidades UI
    ============================================================ */
 const App = {
   state: null,
@@ -550,7 +550,7 @@ const App = {
       this.switchTab('dashboard');
       this.renderIcons();
       if(!SafeLocalStorage.disponible){
-        this.toast('Tu navegador no permite guardar datos de forma permanente aquÃ­. Exporta tu progreso antes de cerrar.', 'error');
+        this.toast('Tu navegador no permite guardar datos de forma permanente aquí. Exporta tu progreso antes de cerrar.', 'error');
       }
     }catch(e){
       mostrarErrorFatal(e.message);
@@ -602,7 +602,7 @@ const App = {
       const file = e.target.files[0];
       if(!file) return;
       Storage.importar(file, (data) => {
-        if(confirm('Â¿Deseas sobrescribir todos tus datos actuales con este respaldo?')){
+        if(confirm('¿Deseas sobrescribir todos tus datos actuales con este respaldo?')){
           data.pesoCorporal = data.pesoCorporal || [];
           data.entrenamientos = data.entrenamientos || [];
           data.consistencia = data.consistencia || {};
@@ -620,7 +620,7 @@ const App = {
 };
 
 /* ============================================================
-   PESTAÃ‘A 1: DASHBOARD
+   PESTAÑA 1: DASHBOARD
    ============================================================ */
 const Dashboard = {
   render(){
@@ -645,12 +645,12 @@ const Dashboard = {
     let html = `
       <div class="card highlight">
         <div class="card-label">Hoy es ${DIAS_LABEL[diaKey]}</div>
-        <div class="card-title">${plan.sesion}${plan.tipo.includes('natacion') ? ' + NataciÃ³n 1h' : ''}${esDiaGymOpcional(plan.tipo) ? ' <span class="badge-recorta">Opcional</span>' : ''}</div>
+        <div class="card-title">${plan.sesion}${plan.tipo.includes('natacion') ? ' + Natación 1h' : ''}${esDiaGymOpcional(plan.tipo) ? ' <span class="badge-recorta">Opcional</span>' : ''}</div>
       </div>
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Peso actual</div>
-          <div class="kpi-value">${pesoActual !== null ? pesoActual.toFixed(1) + ' kg' : 'â€”'}</div>
+          <div class="kpi-value">${pesoActual !== null ? pesoActual.toFixed(1) + ' kg' : '—'}</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Meta (${meta} kg)</div>
@@ -662,7 +662,7 @@ const Dashboard = {
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Racha actual</div>
-          <div class="kpi-value">${racha} dÃ­a${racha === 1 ? '' : 's'}</div>
+          <div class="kpi-value">${racha} día${racha === 1 ? '' : 's'}</div>
         </div>
       </div>
     `;
@@ -679,8 +679,8 @@ const Dashboard = {
     this.bindChecklist(fechaHoy);
   },
 
-  // v2: "gym_opcional" contiene "gym" como substring, asÃ­ que ya no se puede usar
-  // tipo.includes('gym') para decidir si un dÃ­a cuenta en la cuota obligatoria del mes.
+  // v2: "gym_opcional" contiene "gym" como substring, así que ya no se puede usar
+  // tipo.includes('gym') para decidir si un día cuenta en la cuota obligatoria del mes.
   pctSesionesMes(){
     const hoy = new Date();
     const anio = hoy.getFullYear(), mes = hoy.getMonth();
@@ -698,8 +698,8 @@ const Dashboard = {
     return planificados ? Math.round((cumplidos/planificados) * 100) : 0;
   },
 
-  // Un dÃ­a se considera "cumplido" segÃºn lo que exigÃ­a el plan de esa jornada.
-  // v2: los dÃ­as "gym_opcional" nunca rompen la racha (se tratan como descanso cumplido).
+  // Un día se considera "cumplido" según lo que exigía el plan de esa jornada.
+  // v2: los días "gym_opcional" nunca rompen la racha (se tratan como descanso cumplido).
   diaCumplido(fecha){
     const key = diaKeyDeFecha(fecha);
     const plan = ROUTINE_DATA.semana[key];
@@ -710,9 +710,9 @@ const Dashboard = {
     return !!(reg && reg.gym);
   },
 
-  // v2: para cada ejercicio "principal", promedia el RIR de sus Ãºltimas 3 sesiones registradas
-  // y avisa si ese promedio estÃ¡ 1+ punto por debajo del objetivo (mÃ¡s cerca del fallo de lo planeado).
-  // MÃ¡ximo 2 avisos, priorizando la brecha mÃ¡s grande.
+  // v2: para cada ejercicio "principal", promedia el RIR de sus últimas 3 sesiones registradas
+  // y avisa si ese promedio está 1+ punto por debajo del objetivo (más cerca del fallo de lo planeado).
+  // Máximo 2 avisos, priorizando la brecha más grande.
   alertasRirBajo(){
     const principales = [];
     Object.values(ROUTINE_DATA.sesiones).forEach(lista => {
@@ -743,18 +743,18 @@ const Dashboard = {
 
     candidatos.sort((a,b) => b.brecha - a.brecha);
     return candidatos.slice(0, 2).map(c =>
-      `<div class="patron-msg">EstÃ¡s entrenando ${c.nombre} con RIR promedio de ${c.promedio.toFixed(1)}, mÃ¡s cerca del fallo de lo planeado (objetivo: ${c.objetivo}). Considera dejar 1-2 reps mÃ¡s en reserva la prÃ³xima sesiÃ³n.</div>`
+      `<div class="patron-msg">Estás entrenando ${c.nombre} con RIR promedio de ${c.promedio.toFixed(1)}, más cerca del fallo de lo planeado (objetivo: ${c.objetivo}). Considera dejar 1-2 reps más en reserva la próxima sesión.</div>`
     ).join('');
   },
 
-  // v2: recuerda registrar el peso si pasaron mÃ¡s de 7 dÃ­as desde el Ãºltimo registro
+  // v2: recuerda registrar el peso si pasaron más de 7 días desde el último registro
   recordatorioPeso(){
     const pesos = App.state.pesoCorporal.slice().sort((a,b) => a.fecha.localeCompare(b.fecha));
     if(pesos.length === 0) return '';
     const ultimaFecha = parseFecha(pesos[pesos.length - 1].fecha);
     const dias = Math.floor((inicioDelDia(new Date()) - inicioDelDia(ultimaFecha)) / (24*60*60*1000));
     if(dias > 7){
-      return `<div class="patron-msg">Llevas ${dias} dÃ­as sin registrar tu peso. Un registro semanal es suficiente para ver la tendencia.</div>`;
+      return `<div class="patron-msg">Llevas ${dias} días sin registrar tu peso. Un registro semanal es suficiente para ver la tendencia.</div>`;
     }
     return '';
   },
@@ -797,7 +797,7 @@ const Dashboard = {
     const items = ROUTINE_DATA.suplementos.map(s => `
       <label class="check-item">
         <input type="checkbox" data-supp="${s.id}" ${registro[s.id] ? 'checked' : ''}>
-        <span><strong>${s.nombre}</strong> â€” ${s.dosis}<br><small>${s.momento}</small></span>
+        <span><strong>${s.nombre}</strong> — ${s.dosis}<br><small>${s.momento}</small></span>
       </label>
     `).join('');
     return `<div class="card"><div class="card-title-sm">Suplementos de hoy</div>${items}</div>`;
@@ -816,7 +816,7 @@ const Dashboard = {
 };
 
 /* ============================================================
-   PESTAÃ‘A 2: REGISTRO DE ENTRENAMIENTO
+   PESTAÑA 2: REGISTRO DE ENTRENAMIENTO
    ============================================================ */
 const Registro = {
   sesionSeleccionada: null,
@@ -839,11 +839,11 @@ const Registro = {
 
     cont.innerHTML = `
       <div class="card">
-        <label class="field-label">SesiÃ³n a registrar</label>
+        <label class="field-label">Sesión a registrar</label>
         <select id="select-sesion" class="input-select">${opciones}</select>
       </div>
       <div id="lista-ejercicios">${this.renderEjercicios()}</div>
-      <button id="btn-finalizar" class="btn-primary btn-block">Finalizar sesiÃ³n</button>
+      <button id="btn-finalizar" class="btn-primary btn-block">Finalizar sesión</button>
       <div class="card">
         <div class="card-title-sm">Historial de sesiones registradas</div>
         <div id="historial-sesiones">${this.renderHistorial()}</div>
@@ -874,17 +874,17 @@ const Registro = {
     }
   },
 
-  // v2: lista compacta de las Ãºltimas sesiones guardadas, con resoluciÃ³n segura de nombres
+  // v2: lista compacta de las últimas sesiones guardadas, con resolución segura de nombres
   // para ejercicios que ya no existen en ROUTINE_DATA (pallof, opcional_sup, bodysaw...).
   historialCompleto: false,
 
-  // v2: por defecto muestra las Ãºltimas 8 sesiones (vista compacta), con un botÃ³n para expandir
-  // a TODO el historial â€” cualquier fecha, incluida la mÃ¡s antigua, debe seguir siendo accesible
+  // v2: por defecto muestra las últimas 8 sesiones (vista compacta), con un botón para expandir
+  // a TODO el historial — cualquier fecha, incluida la más antigua, debe seguir siendo accesible
   // y resolver con gracia ejercicios ya descontinuados (pallof, opcional_sup, bodysaw...).
   renderHistorial(){
     const todas = App.state.entrenamientos.slice().sort((a,b) => b.fecha.localeCompare(a.fecha));
     if(todas.length === 0){
-      return '<div class="muted">AÃºn no hay sesiones registradas.</div>';
+      return '<div class="muted">Aún no hay sesiones registradas.</div>';
     }
     const visibles = this.historialCompleto ? todas : todas.slice(0, 8);
     const items = visibles.map(ent => {
@@ -896,13 +896,13 @@ const Registro = {
           const rm = epley1RM(s.kg, s.reps);
           if(!mejor || rm > mejor.rm) mejor = { kg: s.kg, reps: s.reps, rm };
         });
-        const detalle = mejor ? `${mejor.kg} kg Ã— ${mejor.reps}` : 'sin series vÃ¡lidas';
+        const detalle = mejor ? `${mejor.kg} kg × ${mejor.reps}` : 'sin series válidas';
         return `<div class="historial-item">${nombre}: ${detalle}</div>`;
       }).join('');
-      return `<div class="historial-sesion"><div class="historial-fecha">${ent.fecha} â€” ${ent.sesion}</div>${filas}</div>`;
+      return `<div class="historial-sesion"><div class="historial-fecha">${ent.fecha} — ${ent.sesion}</div>${filas}</div>`;
     }).join('');
     const boton = todas.length > 8
-      ? `<button class="btn-small" id="btn-historial-toggle">${this.historialCompleto ? 'Mostrar solo las Ãºltimas 8' : `Ver historial completo (${todas.length} sesiones)`}</button>`
+      ? `<button class="btn-small" id="btn-historial-toggle">${this.historialCompleto ? 'Mostrar solo las últimas 8' : `Ver historial completo (${todas.length} sesiones)`}</button>`
       : '';
     return items + boton;
   },
@@ -918,7 +918,7 @@ const Registro = {
     });
   },
 
-  // Busca la mejor serie histÃ³rica (mayor 1RM estimado) para mostrar la referencia de sobrecarga progresiva
+  // Busca la mejor serie histórica (mayor 1RM estimado) para mostrar la referencia de sobrecarga progresiva
   mejorSerieAnterior(ejercicioId){
     let mejor = null;
     App.state.entrenamientos.forEach(ent => {
@@ -954,7 +954,7 @@ const Registro = {
       // v2: variantes formalizadas (o el aviso fijo de "banca"), siempre visibles sin clic extra
       let variantesHtml = '';
       if(ej.variantes && ej.variantes.length){
-        variantesHtml = `<div class="variantes-row">Variantes: ${ej.variantes.map(v => `<button type="button" class="variante-chip" data-variante-ej="${ej.id}" data-variante-nombre="${v.replace(/"/g,'&quot;')}">${v}</button>`).join(' Â· ')}</div>`;
+        variantesHtml = `<div class="variantes-row">Variantes: ${ej.variantes.map(v => `<button type="button" class="variante-chip" data-variante-ej="${ej.id}" data-variante-nombre="${v.replace(/"/g,'&quot;')}">${v}</button>`).join(' · ')}</div>`;
       } else if(ej.avisoVariante){
         variantesHtml = `<div class="aviso-variante">${ej.avisoVariante}</div>`;
       }
@@ -962,14 +962,14 @@ const Registro = {
       return `
         <details class="card ejercicio-card" open>
           <summary>
-            <span class="ejercicio-nombre">${ej.nombre}${ej.principal ? '<span class="badge-principal">Principal</span>' : ''}${ej.opcionalSiFaltaTiempo ? '<span class="badge-recorta">Recorta aquÃ­ si falta tiempo</span>' : ''}</span>
-            <span class="ejercicio-objetivo">${ej.series}Ã—${ej.reps} @ RIR ${ej.rir}</span>
+            <span class="ejercicio-nombre">${ej.nombre}${ej.principal ? '<span class="badge-principal">Principal</span>' : ''}${ej.opcionalSiFaltaTiempo ? '<span class="badge-recorta">Recorta aquí si falta tiempo</span>' : ''}</span>
+            <span class="ejercicio-objetivo">${ej.series}×${ej.reps} @ RIR ${ej.rir}</span>
           </summary>
           <div class="ejercicio-body">
             ${variantesHtml}
             ${mejor
-              ? `<div class="record-anterior">RÃ©cord a superar: ${mejor.kg} kg Ã— ${mejor.reps} (1RM est. ${mejor.rm.toFixed(1)} kg)</div>`
-              : `<div class="record-anterior muted">AÃºn no hay historial para este ejercicio.</div>`}
+              ? `<div class="record-anterior">Récord a superar: ${mejor.kg} kg × ${mejor.reps} (1RM est. ${mejor.rm.toFixed(1)} kg)</div>`
+              : `<div class="record-anterior muted">Aún no hay historial para este ejercicio.</div>`}
             <div class="rir-objetivo-row">
               <span class="chip-rir">Objetivo: RIR ${ej.rir}</span>
               <button type="button" class="btn-help-rir" data-help-rir="${ej.id}">?</button>
@@ -977,7 +977,7 @@ const Registro = {
             <div class="rir-guide hidden" id="guide-${ej.id}">${GUIA_RIR}</div>
             ${filas}
             <div class="aviso-rir hidden" id="aviso-rir-${ej.id}"></div>
-            <button class="btn-add-set" data-add-ej="${ej.id}">+ AÃ±adir serie</button>
+            <button class="btn-add-set" data-add-ej="${ej.id}">+ Añadir serie</button>
             <textarea class="input-nota" placeholder="Nota (opcional)" data-nota="${ej.id}">${datos.nota}</textarea>
           </div>
         </details>
@@ -986,7 +986,7 @@ const Registro = {
   },
 
   // v2: recalcula si el RIR promedio de las series ya anotadas de este ejercicio (en la
-  // sesiÃ³n actual) estÃ¡ 2+ puntos por debajo del objetivo, y actualiza solo ese aviso puntual
+  // sesión actual) está 2+ puntos por debajo del objetivo, y actualiza solo ese aviso puntual
   // (sin re-renderizar toda la lista, para no perder el foco de otros inputs mientras se escribe).
   actualizarAvisoRir(ej){
     const div = document.getElementById(`aviso-rir-${ej.id}`);
@@ -1001,7 +1001,7 @@ const Registro = {
     }
     const promedio = rirs.reduce((a,b) => a+b, 0) / rirs.length;
     if(objetivoMin - promedio >= 2){
-      div.textContent = 'EstÃ¡s registrando RIR mÃ¡s bajo que el objetivo de este ejercicio. Revisa la guÃ­a (?) antes de anotar la prÃ³xima serie.';
+      div.textContent = 'Estás registrando RIR más bajo que el objetivo de este ejercicio. Revisa la guía (?) antes de anotar la próxima serie.';
       div.classList.remove('hidden');
     } else {
       div.classList.add('hidden');
@@ -1079,13 +1079,13 @@ const Registro = {
 
     const planHoy = ROUTINE_DATA.semana[diaKeyDeFecha(new Date())];
     if(planHoy.tipo.includes('natacion')){
-      if(confirm('Â¿TambiÃ©n completaste la nataciÃ³n de hoy?')){
+      if(confirm('¿También completaste la natación de hoy?')){
         App.state.consistencia[fecha].natacion = true;
       }
     }
 
     App.save();
-    App.toast('SesiÃ³n guardada');
+    App.toast('Sesión guardada');
     delete this.valores[sesion];
     this.render();
     App.renderIcons();
@@ -1093,7 +1093,7 @@ const Registro = {
 };
 
 /* ============================================================
-   PESTAÃ‘A 3: CALENDARIO DE CONSISTENCIA
+   PESTAÑA 3: CALENDARIO DE CONSISTENCIA
    ============================================================ */
 const Calendario = {
   offset: 0,
@@ -1110,13 +1110,13 @@ const Calendario = {
     cont.innerHTML = `
       <div class="calendar-nav">
         <button id="cal-prev" class="btn-small">&larr; Semana anterior</button>
-        <span class="calendar-rango">${fmtFecha(lunesSemana)} â€” ${fmtFecha(addDias(lunesSemana, 6))}</span>
+        <span class="calendar-rango">${fmtFecha(lunesSemana)} — ${fmtFecha(addDias(lunesSemana, 6))}</span>
         <button id="cal-next" class="btn-small">Semana siguiente &rarr;</button>
       </div>
       <div class="calendar-grid">${tarjetas}</div>
       <div class="card">
         <div class="card-title-sm">Resumen del mes</div>
-        <div>Gym: ${resumen.gym}% Â· NataciÃ³n: ${resumen.natacion}%</div>
+        <div>Gym: ${resumen.gym}% · Natación: ${resumen.natacion}%</div>
       </div>
     `;
 
@@ -1133,7 +1133,7 @@ const Calendario = {
     const esFuturo = inicioDelDia(fecha) > inicioDelDia(new Date());
     const esHoy = fstr === hoyStr();
 
-    // v2: "gym_opcional" nunca se pinta rojo â€” gris si no se marcÃ³, verde (bonus) si sÃ­.
+    // v2: "gym_opcional" nunca se pinta rojo — gris si no se marcó, verde (bonus) si sí.
     let clase;
     if(plan.tipo === 'descanso'){
       clase = 'dia-gris';
@@ -1147,7 +1147,7 @@ const Calendario = {
 
     const mostrarNatacion = plan.tipo.includes('natacion');
 
-    // v2: selector para reasignar quÃ© sesiÃ³n se entrenÃ³ ese dÃ­a, sin cambiar la plantilla semanal
+    // v2: selector para reasignar qué sesión se entrenó ese día, sin cambiar la plantilla semanal
     const opcionesSesion = Object.keys(ROUTINE_DATA.sesiones).map(s =>
       `<option value="${s}" ${(reg.sesionReal || plan.sesion) === s ? 'selected' : ''}>${s}</option>`
     ).join('');
@@ -1157,17 +1157,17 @@ const Calendario = {
         <div class="dia-nombre">${DIAS_LABEL[key]} ${esHoy ? '<span class="hoy-tag">Hoy</span>' : ''}</div>
         <div class="dia-fecha">${fstr}</div>
         <div class="dia-sesion">${plan.sesion}${esDiaGymOpcional(plan.tipo) ? ' <span class="badge-recorta">Opcional</span>' : ''}</div>
-        <label class="field-label" style="margin-top:8px">Â¿QuÃ© entrenaste hoy?</label>
+        <label class="field-label" style="margin-top:8px">¿Qué entrenaste hoy?</label>
         <select class="input-select" data-reasignar="${fstr}">${opcionesSesion}</select>
         <label class="check-item small"><input type="checkbox" data-dia="${fstr}" data-campo="gym" ${reg.gym ? 'checked' : ''}> Gym</label>
-        ${mostrarNatacion ? `<label class="check-item small"><input type="checkbox" data-dia="${fstr}" data-campo="natacion" ${reg.natacion ? 'checked' : ''}> NataciÃ³n</label>` : ''}
+        ${mostrarNatacion ? `<label class="check-item small"><input type="checkbox" data-dia="${fstr}" data-campo="natacion" ${reg.natacion ? 'checked' : ''}> Natación</label>` : ''}
         <label class="check-item small"><input type="checkbox" data-dia="${fstr}" data-campo="descanso" ${reg.descanso ? 'checked' : ''}> Descanso activo</label>
       </div>
     `;
   },
 
   bindChecks(){
-    // v2: gym y descanso son mutuamente excluyentes â€” marcar uno desmarca el otro.
+    // v2: gym y descanso son mutuamente excluyentes — marcar uno desmarca el otro.
     document.querySelectorAll('[data-dia]').forEach(chk => {
       chk.addEventListener('change', () => {
         const { dia, campo } = chk.dataset;
@@ -1188,12 +1188,12 @@ const Calendario = {
         App.state.consistencia[dia] = App.state.consistencia[dia] || {};
         App.state.consistencia[dia].sesionReal = sel.value;
         App.save();
-        App.toast('SesiÃ³n del dÃ­a actualizada');
+        App.toast('Sesión del día actualizada');
       });
     });
   },
 
-  // v2: solo cuenta dÃ­as de gym obligatorios en el % del mes ("gym_opcional" queda fuera).
+  // v2: solo cuenta días de gym obligatorios en el % del mes ("gym_opcional" queda fuera).
   resumenMensual(){
     const hoy = new Date();
     const anio = hoy.getFullYear(), mes = hoy.getMonth();
@@ -1215,7 +1215,7 @@ const Calendario = {
 };
 
 /* ============================================================
-   PESTAÃ‘A 4: NUTRICIÃ“N Y SUPLEMENTACIÃ“N
+   PESTAÑA 4: NUTRICIÓN Y SUPLEMENTACIÓN
    ============================================================ */
 const Nutricion = {
   render(){
@@ -1239,7 +1239,7 @@ const Nutricion = {
         ${tasa}
       </div>
       <div class="card">
-        <div class="card-title-sm">PorciÃ³n del ganador hoy</div>
+        <div class="card-title-sm">Porción del ganador hoy</div>
         <div class="porcion-botones">
           <button class="btn-small" data-porcion="1/4">1/4</button>
           <button class="btn-small" data-porcion="1/3">1/3</button>
@@ -1248,17 +1248,17 @@ const Nutricion = {
         <div class="porcion-actual">Hoy: ${porcionHoy || 'sin registrar'}</div>
       </div>
       <div class="card">
-        <div class="card-title-sm">Historial de suplementaciÃ³n (14 dÃ­as)</div>
+        <div class="card-title-sm">Historial de suplementación (14 días)</div>
         ${supHeatmap}
       </div>
     `;
 
     document.getElementById('btn-guardar-peso').addEventListener('click', () => {
       const val = parseFloat(document.getElementById('input-peso').value);
-      if(isNaN(val) || val <= 0){ alert('Ingresa un peso vÃ¡lido.'); return; }
+      if(isNaN(val) || val <= 0){ alert('Ingresa un peso válido.'); return; }
       const existente = App.state.pesoCorporal.find(p => p.fecha === fecha);
       if(existente){
-        if(!confirm('Ya registraste tu peso hoy. Â¿Deseas sobrescribirlo?')) return;
+        if(!confirm('Ya registraste tu peso hoy. ¿Deseas sobrescribirlo?')) return;
         existente.kg = val;
       } else {
         App.state.pesoCorporal.push({ fecha, kg: val });
@@ -1275,7 +1275,7 @@ const Nutricion = {
         App.state.suplementacion[fecha].ganadorPorcion = btn.dataset.porcion;
         App.state.suplementacion[fecha].ganador = true;
         App.save();
-        App.toast('PorciÃ³n registrada');
+        App.toast('Porción registrada');
         this.render();
         App.renderIcons();
       });
@@ -1298,17 +1298,17 @@ const Nutricion = {
     const actual = this.promedioUltimos(7, 0);
     const anterior = this.promedioUltimos(7, 7);
     if(actual === null || anterior === null){
-      return `<div class="muted">AÃºn no hay suficientes datos (necesitas al menos 14 dÃ­as de registros de peso).</div>`;
+      return `<div class="muted">Aún no hay suficientes datos (necesitas al menos 14 días de registros de peso).</div>`;
     }
     const diffSemanal = actual - anterior;
     const proyeccionMensual = diffSemanal * 4.345;
-    let clase = 'semaforo-gris', mensaje = 'Peso estable o bajando: sube calorÃ­as.';
+    let clase = 'semaforo-gris', mensaje = 'Peso estable o bajando: sube calorías.';
     if(proyeccionMensual >= 0.3 && proyeccionMensual <= 0.5){
-      clase = 'semaforo-verde'; mensaje = 'Ganancia ideal, mantÃ©n el rumbo.';
+      clase = 'semaforo-verde'; mensaje = 'Ganancia ideal, mantén el rumbo.';
     } else if(proyeccionMensual > 0.5){
-      clase = 'semaforo-amarillo'; mensaje = 'Ganancia rÃ¡pida (riesgo de grasa): reduce el ganador.';
+      clase = 'semaforo-amarillo'; mensaje = 'Ganancia rápida (riesgo de grasa): reduce el ganador.';
     }
-    return `<div class="semaforo ${clase}">${proyeccionMensual.toFixed(2)} kg/mes proyectado â€” ${mensaje}</div>`;
+    return `<div class="semaforo ${clase}">${proyeccionMensual.toFixed(2)} kg/mes proyectado — ${mensaje}</div>`;
   },
 
   renderHeatmap(){
@@ -1325,7 +1325,7 @@ const Nutricion = {
 };
 
 /* ============================================================
-   PESTAÃ‘A 5: ANALÃTICAS
+   PESTAÑA 5: ANALÍTICAS
    ============================================================ */
 const Analiticas = {
   chartPeso: null,
@@ -1344,18 +1344,18 @@ const Analiticas = {
 
     cont.innerHTML = `
       <div class="card">
-        <div class="card-title-sm">EvoluciÃ³n del peso corporal</div>
-        ${chartsDisponibles ? '<canvas id="chart-peso" height="220"></canvas>' : '<div class="muted">GrÃ¡ficos no disponibles sin conexiÃ³n. Tus datos se siguen guardando con normalidad.</div>'}
+        <div class="card-title-sm">Evolución del peso corporal</div>
+        ${chartsDisponibles ? '<canvas id="chart-peso" height="220"></canvas>' : '<div class="muted">Gráficos no disponibles sin conexión. Tus datos se siguen guardando con normalidad.</div>'}
       </div>
       <div class="card">
-        <div class="card-title-sm">1RM estimado â€” ejercicios principales</div>
+        <div class="card-title-sm">1RM estimado — ejercicios principales</div>
         <div class="chip-selector">
           ${principales.map(p => `<label class="chip"><input type="checkbox" data-toggle-ej="${p.id}" ${this.ejerciciosVisibles.has(p.id) ? 'checked' : ''}> ${p.nombre}</label>`).join('')}
         </div>
-        ${chartsDisponibles ? '<canvas id="chart-1rm" height="240"></canvas>' : '<div class="muted">GrÃ¡ficos no disponibles sin conexiÃ³n.</div>'}
+        ${chartsDisponibles ? '<canvas id="chart-1rm" height="240"></canvas>' : '<div class="muted">Gráficos no disponibles sin conexión.</div>'}
       </div>
       <div class="card">
-        <div class="card-title-sm">Detector de patrones: nataciÃ³n y rendimiento</div>
+        <div class="card-title-sm">Detector de patrones: natación y rendimiento</div>
         <div id="patron-resultado">${this.detectarPatrones()}</div>
       </div>
     `;
@@ -1380,7 +1380,7 @@ const Analiticas = {
     if(this.chartPeso){ this.chartPeso.destroy(); this.chartPeso = null; }
     const pesos = App.state.pesoCorporal.slice().sort((a,b) => a.fecha.localeCompare(b.fecha));
     if(pesos.length < 2){
-      ctx.replaceWith(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Registra al menos 2 dÃ­as de peso corporal para ver el grÃ¡fico.' }));
+      ctx.replaceWith(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Registra al menos 2 días de peso corporal para ver el gráfico.' }));
       return;
     }
     const labels = pesos.map(p => p.fecha);
@@ -1397,7 +1397,7 @@ const Analiticas = {
         labels,
         datasets: [
           { label: 'Peso (kg)', data: valores, borderColor: '#3B82F6', backgroundColor: 'transparent', tension: 0.25 },
-          { label: 'Media mÃ³vil 7d', data: media7, borderColor: '#22C55E', backgroundColor: 'transparent', tension: 0.25 },
+          { label: 'Media móvil 7d', data: media7, borderColor: '#22C55E', backgroundColor: 'transparent', tension: 0.25 },
           { label: 'Meta', data: labels.map(() => meta), borderColor: '#EF4444', borderDash: [6,4], pointRadius: 0 }
         ]
       },
@@ -1444,7 +1444,7 @@ const Analiticas = {
     const semanas = Array.from(todasSemanas).sort();
 
     if(semanas.length < 2){
-      ctx.replaceWith(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Registra entrenamientos de al menos 2 semanas distintas para ver la evoluciÃ³n del 1RM.' }));
+      ctx.replaceWith(Object.assign(document.createElement('div'), { className: 'muted', textContent: 'Registra entrenamientos de al menos 2 semanas distintas para ver la evolución del 1RM.' }));
       return;
     }
 
@@ -1472,12 +1472,12 @@ const Analiticas = {
   },
 
   /*
-    Detector de patrones (lÃ³gica exacta):
-    1) Para cada sesiÃ³n de viernes (Upper B) y sÃ¡bado (Lower C), promedio de 1RM estimado de ejercicios principales.
+    Detector de patrones (lógica exacta):
+    1) Para cada sesión de viernes (Upper B) y sábado (Lower C), promedio de 1RM estimado de ejercicios principales.
     2) Comparar contra el promedio de las mismas sesiones de las 3 semanas anteriores.
-    3) Si la caÃ­da es >= 5% y el jueves anterior tuvo nataciÃ³n marcada -> alerta de patrÃ³n negativo.
-    4) Si con nataciÃ³n el rendimiento se mantiene o sube -> mensaje positivo.
-    5) Requiere mÃ­nimo 3 semanas previas de datos; antes de eso, mensaje de "recolectando datos".
+    3) Si la caída es >= 5% y el jueves anterior tuvo natación marcada -> alerta de patrón negativo.
+    4) Si con natación el rendimiento se mantiene o sube -> mensaje positivo.
+    5) Requiere mínimo 3 semanas previas de datos; antes de eso, mensaje de "recolectando datos".
   */
   detectarPatrones(){
     const sesionesObjetivo = [
@@ -1533,9 +1533,9 @@ const Analiticas = {
       const huboNatacion = !!(App.state.consistencia[fstrJueves] && App.state.consistencia[fstrJueves].natacion);
 
       if(caidaPct >= 5 && huboNatacion){
-        mensajes.push(`PatrÃ³n: tu rendimiento del ${DIAS_LABEL[dia]} cayÃ³ ${caidaPct.toFixed(1)}% tras la nataciÃ³n del jueves. Considera reducir la intensidad del nado o adelantar los ejercicios pesados.`);
+        mensajes.push(`Patrón: tu rendimiento del ${DIAS_LABEL[dia]} cayó ${caidaPct.toFixed(1)}% tras la natación del jueves. Considera reducir la intensidad del nado o adelantar los ejercicios pesados.`);
       } else if(huboNatacion){
-        mensajes.push(`La nataciÃ³n no estÃ¡ afectando tu rendimiento del ${DIAS_LABEL[dia]}. Buen manejo de fatiga.`);
+        mensajes.push(`La natación no está afectando tu rendimiento del ${DIAS_LABEL[dia]}. Buen manejo de fatiga.`);
       }
     });
 
